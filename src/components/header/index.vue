@@ -20,8 +20,8 @@ export default {
 <style lang="scss" scoped>
 .header{    
     width: 100%;
-    height: 60px;
-    line-height: 60px;
+    height: 45px;
+    line-height: 45px;
     background-color: rgba(0, 0, 0, 0.65);
     padding: 0 4%;
     box-sizing: border-box;
@@ -33,7 +33,7 @@ export default {
     justify-content: space-between;
 }
 .logo{
-    width: 10%;
+    width: 12%;
     padding: .5% 0;
     vertical-align: middle;
     img{width: 100%;}

@@ -11,8 +11,6 @@ export default {
 <style lang="scss" scoped>
 .footer{
     width: 100%;
-    height: 30px;
-    line-height: 30px;
     text-align: center;
     letter-spacing: 4px;
     color: #0a2c9a;
@@ -20,6 +18,6 @@ export default {
     position: absolute;
     bottom: 0;
     z-index: 9;
-    padding: 8px 0;
+    padding: 2px 0;
 }
 </style>

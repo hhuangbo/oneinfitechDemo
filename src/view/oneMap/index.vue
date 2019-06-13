@@ -1,12 +1,16 @@
 <template>
-    <div>
+    <div class="mapContent">
         <div class="oneMap" id="container"></div>
-        <!-- <el-amap vid="amapDemo" :zoom="zoom" :center="center"></el-amap> -->
+        <menuCate></menuCate>
     </div>
 </template>
 
 <script>
+import menuCate from './menuCate/index'
 export default {
+    components:{
+        menuCate
+    },
     data(){
         return{
             map:null,
@@ -44,8 +48,15 @@ export default {
     left: 0;
     top: 0;
 }
-
-
+.mapContent{
+    // position: relative;
+}
+//菜单分类 css
+.menuCate{
+    position: absolute;
+    top: 12%;
+    left: 4%;
+}
 
 
 

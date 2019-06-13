@@ -24,7 +24,6 @@ export default {
     },
     methods:{
         searchEvent(){
-            console.log('啊啊啊啊')
             //查询成功跳转到map页面
             this.$router.push({path:'/oneMap'});
     

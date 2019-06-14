@@ -1,0 +1,16 @@
+{
+"countPrev":{
+"bgj":"60000",
+"lshtMValue":"29600",
+"scMValue":"3600",
+"sRatio":"1.3"
+},
+"detail_zj":{
+"maxPrice":"90000",
+"minPrice":"720000",
+"AvePrice":"731000",
+"ExcessScale1":"1.3",
+"ExcessScale3":"15.7",
+"ExcessScale5":"6.5"
+}
+}

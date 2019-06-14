@@ -54,8 +54,10 @@ export default {
 //菜单分类 css
 .menuCate{
     position: absolute;
-    top: 12%;
-    left: 4%;
+    top: 50px;
+    left: 4%;    
+    width: 140px;
+    overflow: hidden;
 }
 
 

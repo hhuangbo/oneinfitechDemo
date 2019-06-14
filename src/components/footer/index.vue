@@ -13,7 +13,7 @@ export default {
     width: 100%;
     text-align: center;
     letter-spacing: 4px;
-    color: #0a2c9a;
+    color: $C031f4a;
     background-color: rgba(0, 0, 0, 0.65);
     position: absolute;
     bottom: 0;

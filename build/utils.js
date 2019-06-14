@@ -54,16 +54,46 @@ exports.cssLoaders = function (options) {
     }
   }
 
-  // https://vue-loader.vuejs.org/en/configurations/extract-css.html
+  // 全局文件引入 当然只想编译一个文件的话可以省去这个函数 与下面对应 0516
+  function resolveResource(name) {
+    return path.resolve(__dirname, '../src/common/css/' + name);
+  }
+  function generateSassResourceLoader() {
+    var loaders = [
+      cssLoader,
+      'sass-loader',
+      {
+        loader: 'sass-resources-loader',
+        options: {
+          // 多个文件时用数组的形式传入，单个文件时可以直接使用 path.resolve(__dirname, '../static/style/common.scss'
+          resources: [resolveResource('_variable.scss')]  
+        }
+      }
+      ];
+      if (options.extract) {
+        return ExtractTextPlugin.extract({
+          use: loaders,
+          fallback: 'vue-style-loader'
+        })
+      } else {
+        return ['vue-style-loader'].concat(loaders)
+      }
+    }
+   
   return {
     css: generateLoaders(),
     postcss: generateLoaders(),
     less: generateLoaders('less'),
     sass: generateLoaders('sass', { indentedSyntax: true }),
-    scss: generateLoaders('sass'),
+    scss: generateLoaders('sass').concat({
+        loader: 'sass-resources-loader',
+        options: {
+            resources: [resolveResource('_variable.scss')]
+         }
+    }),
     stylus: generateLoaders('stylus'),
     styl: generateLoaders('stylus')
-  }
+ }
 }
 
 // Generate loaders for standalone style files (outside of .vue)

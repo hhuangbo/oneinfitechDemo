@@ -33,7 +33,7 @@ export default {
     justify-content: space-between;
 }
 .logo{
-    width: 12%;
+    width: 10%;
     padding: .5% 0;
     vertical-align: middle;
     img{width: 100%;}

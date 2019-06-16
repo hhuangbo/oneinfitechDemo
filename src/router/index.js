@@ -3,7 +3,9 @@ import Router from 'vue-router'
 
 const login = resolve => require.ensure([],() => resolve(require('../view/login/login')),'login') 
 const oneMap = resolve => require.ensure([],() => resolve(require('../view/oneMap/index')),'oneMap') 
+
 const demo = resolve => require.ensure([],() => resolve(require('../view/oneMap/demo')),'demo') 
+// const demo2 = resolve => require.ensure([],() => resolve(require('../view/oneMap/demo2')),'demo2') 
 
 Vue.use(Router)
 
@@ -29,5 +31,10 @@ export default new Router({
       name: 'demo',
       component: demo
     }
+    // ,{
+    //   path: '/demo2',
+    //   name: 'demo2',
+    //   component: demo2
+    // }
   ]
 })

@@ -54,7 +54,7 @@ export default {
         that.mapInit();
          //添加监听时间，当前缩放级别
         AMap.event.addListener(that.map,'zoomend',function(){
-            // that._onZoomEnd()
+            that._onZoomEnd()
         });
         
         
@@ -78,17 +78,21 @@ export default {
             var _this=this;
             if (this.map.getZoom() < 7) {//全国下的省份
             console.log('ssss')
-                for (var i = 0; i < this.markers.length; i += 1) {
-                    this.map.remove(this.markers[i].subMarkers);
-                }
-               this.map.add(this.markers);
+            //     for (var i = 0; i < this.markers.length; i += 1) {
+            //         this.map.remove(this.markers[i].subMarkers);
+            //     }
+            //    this.map.add(this.markers);
+             
+            this.map.remove(this.markersTwo)
+            _this.markers.push(localStorage.getItem('markers'))
             }else if((this.map.getZoom() < 9) && (this.map.getZoom() > 7)){//省份下的市
             
             console.log('aaa');
-                for (var i = 0; i < this.markersTwo.length; i += 1) {
-                    this.map.remove(this.markersTwo[i].subMarkers);
-                }
-                this.map.add(this.markersTwo);
+                // for (var i = 0; i < this.markersTwo.length; i += 1) {
+                //     this.map.remove(this.markersTwo[i].subMarkers);
+                // }
+                // this.map.add(this.markersTwo);
+                 this.map.remove(this.markers)
             }
             // else if(map.getZoom() < 14 && map.getZoom() > 9){//市下面的区或县
             //     for (var i = 0; i < markersThree.length; i += 1) {
@@ -109,11 +113,12 @@ export default {
                     content:  `<div style="background-color: hsla(208, 80%, 48%, 0.7); height: 50px;line-height: 50px; width: 50px;text-align:center; border: 1px solid hsl(208, 80%, 48%); border-radius: 50%; box-shadow: hsl(208, 80%, 48%) 0px 0px 1px;">${data[i].count}</div> `,
                     offset: new AMap.Pixel(-15, -15)//点标记显示位置偏移量
                 })
+                localStorage.setItem('markers',marker)
                 this.markers.push(marker)
 
                marker.on('click', this.cityInit);
             } 
-            var count = this.markers.length;
+            // var count = this.markers.length;
             // _this.addCluster()
         },
         addCluster(){//添加点聚合
@@ -129,10 +134,9 @@ export default {
             })
         },
         cityInit(e){//市
-            // this.clearMarker(this.markers)
             var _this=this;
-            // _this.markers.setMap(null);
-            this.map.setZoomAndCenter(8);
+             this.map.remove(this.markers)
+            this.map.setZoomAndCenter(10);
             var provinceDatas=JSON.parse(JSON.stringify(e.target.getExtData()));
             let datas=provinceDatas.info;
             if(datas){

@@ -6,16 +6,16 @@
     margin-left: 5px;
     border: 1px solid $C1075aa;
 }
-.el-checkbox__label{border: 1px solid $C1075aa;
-background-color: #fff;
+.el-checkbox__label{color: #fff;
 border-radius: 5px;
 padding: 5px 10px;}
+.el-checkbox{width:100%;}
 .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
     background-color: #fff;
     border-color: $C1075aa;
     
 }
-.el-checkbox__input.is-checked+.el-checkbox__label{color: $C1075aa;}
+.el-checkbox__input.is-checked+.el-checkbox__label{color: #fff;}
 .el-checkbox__inner::after{
     border: 2px solid $C1075aa;
     border-left: 0;

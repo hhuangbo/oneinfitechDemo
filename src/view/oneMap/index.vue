@@ -2,16 +2,22 @@
     <div class="mapContent">
         <div class="oneMap" id="container"></div>
         <menuCate ></menuCate>
+
+        <photoInfo ><!--仓库照片弹框--></photoInfo>
+        <warehInfo><!--仓库基本信息弹框--></warehInfo>
     </div>
 </template>
 
 <script>
-// import menuCate from './menuCate/index'
+import qs from 'QS'
 import menuCate from './menuCate/menuCate'
+
+import photoInfo from './ejectInfoSet/photoInfo'
+import warehInfo from './ejectInfoSet/warehInfo'
 import {mapGetters} from 'vuex'
 export default {
     components:{
-        menuCate
+        menuCate,photoInfo,warehInfo
     },
     data(){
         return{
@@ -42,12 +48,10 @@ export default {
             console.log(data);
             
         }
+        // this._onZoomEnd()
     },
     computed:{
         ...mapGetters(['menuInfo'])
-    },
-    watach:{
-        // this._onZoomEnd()
     },
     mounted(){
         var that=this;
@@ -69,10 +73,12 @@ export default {
                 viewMode: '2D'
             })                
         },
-        secondLevelData(data){//左侧菜单点击取值 子组件
-            console.log('我是从子组件来的',data)
+        secondLevelData(data){//左侧菜单点击取值 子组件1
             // this.markers.push(data.lng,data.lat)
             this.province(data)
+        },
+        Level3Data(data){//左侧菜单点击取值 子组件2级
+            this.cityInit(data)
         },
         _onZoomEnd(){//监听地图缩放
             var _this=this;
@@ -83,39 +89,41 @@ export default {
             //     }
             //    this.map.add(this.markers);
              
-            this.map.remove(this.markersTwo)
-            _this.markers.push(localStorage.getItem('markers'))
+            this.map.remove(this.markersTwo)//移除不再层级的点聚合
+            this.province(JSON.parse(localStorage.getItem('markersDatas')))
+            // _this.markers.push(localStorage.getItem('markersDatas'))
             }else if((this.map.getZoom() < 9) && (this.map.getZoom() > 7)){//省份下的市
-            
-            console.log('aaa');
                 // for (var i = 0; i < this.markersTwo.length; i += 1) {
                 //     this.map.remove(this.markersTwo[i].subMarkers);
                 // }
                 // this.map.add(this.markersTwo);
-                 this.map.remove(this.markers)
+                this.map.remove(this.markers)
+                // this.cityInit(JSON.parse(localStorage.getItem('markersTwoDatas')))
+            }else if(this.map.getZoom() < 14 && this.map.getZoom() > 9){//市下面的区或县
+                // for (var i = 0; i < markersThree.length; i += 1) {
+                //     map.remove(markersThree[i].subMarkers);
+                // }
+                // map.add(markersThree);
             }
-            // else if(map.getZoom() < 14 && map.getZoom() > 9){//市下面的区或县
-            //     for (var i = 0; i < markersThree.length; i += 1) {
-            //         map.remove(markersThree[i].subMarkers);
-            //     }
-            //     map.add(markersThree);
-            // }
         },
         province(data){////省
             var _this=this
             if(this.cluster){this.cluster.setMap(null);}
+            // if(localStorage.getItem('markersDatas')){
+            //     data=localStorage.getItem('markersDatas')
+            // }
             // let datas=data.level;
             for (var i = 0; i < data.length; i ++) {
                var marker=new AMap.Marker({
                     position: [data[i].lng,data[i].lat],
-                    map: this.map,
+                    // map: this.map,//点标记添加到地图上
                     extData:data[i],//自定义属性值
                     content:  `<div style="background-color: hsla(208, 80%, 48%, 0.7); height: 50px;line-height: 50px; width: 50px;text-align:center; border: 1px solid hsl(208, 80%, 48%); border-radius: 50%; box-shadow: hsl(208, 80%, 48%) 0px 0px 1px;">${data[i].count}</div> `,
                     offset: new AMap.Pixel(-15, -15)//点标记显示位置偏移量
                 })
-                localStorage.setItem('markers',marker)
+                localStorage.setItem('markersDatas',JSON.stringify(data)) 
                 this.markers.push(marker)
-
+                this.map.add(marker)//点标记添加到地图上
                marker.on('click', this.cityInit);
             } 
             // var count = this.markers.length;
@@ -134,29 +142,34 @@ export default {
             })
         },
         cityInit(e){//市
-            var _this=this;
-             this.map.remove(this.markers)
-            this.map.setZoomAndCenter(10);
-            var provinceDatas=JSON.parse(JSON.stringify(e.target.getExtData()));
-            let datas=provinceDatas.info;
-            if(datas){
-                for (var i = 0; i < datas.length; i ++) {
+            var _this=this,data;
+             this.map.remove(this.markers)//清除点聚合
+             this.map.remove(this.markersTwo)
+            if(e.target){data=JSON.parse(JSON.stringify(e.target.getExtData())).info;}
+            else{data=e.info}
+            this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//设置地图层级及中心位置
+            console.log(data,e.info)
+            if(data){
+                for (var i = 0; i < data.length; i ++) {
                 var marker=new AMap.Marker({
-                        position: [datas[i].lng,datas[i].lat],
+                        position: [data[i].lng,data[i].lat],
                         map: this.map,
-                        extData:datas[i],
+                        extData:data[i],
                         content: `<div style="background-color: rgba(16, 117, 170, 0.8); 
                             height: 50px;line-height:50px; width: 50px; text-align:center;border: 1px solid hsl(180, 100%, 40%); 
                             border-radius: 50%; box-shadow: hsl(180, 100%, 50%) 0px 0px 1px;color:#fff" >
-                            ${datas[i].count}</div>`,
+                            ${data[i].count}</div>`,
                         offset: new AMap.Pixel(-10,-20)//点标记显示位置偏移量
                     });
+                    
+                    localStorage.setItem('markersTwoDatas',JSON.stringify(data)) 
                     this.markersTwo.push(marker);
+                    marker.on('click', this.areaInit);
                 }
             }
         },
         areaInit(){//区
-
+            this.map.setZoomAndCenter(12);//设置地图层级
         },
         _renderClusterMarker(context) { 
             var count = this.markers.length;
@@ -202,14 +215,6 @@ export default {
 }
 .mapContent{
     // position: relative;
-}
-//菜单分类 css
-.menuCate{
-    position: absolute;
-    top: 50px;
-    left: 4%;    
-    width: 140px;
-    overflow: hidden;
 }
 
 

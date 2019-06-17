@@ -23,8 +23,8 @@ export default {
 
 <style lang="scss" scoped>
 .tempMenu2{
-    background-color:$C1075aa; 
-    opacity: .5;
+    background-color:$C031f4a; 
+    opacity: .8;
 }
 li{    
     color: #fff;

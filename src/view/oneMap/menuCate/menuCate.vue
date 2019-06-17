@@ -1,21 +1,29 @@
 <template>
-    <ul class="menuCate">
+<div class="menuCate">
+    <ul class="">
         <li v-for="(item,index) in menuList" :class="[active1==index ? 'li1 isOpened' :'li1']">
             <span @click="setTegel(item,index)" class="menu-name">
                 {{item.title}}
             </span>
             <ul class="ul2" v-if="item.level&&(active1 == index)">
-                <li v-for="(items,indexs) in item.level" :class="[active2 ==indexs &&item.type==2  ? 'li2 isOpened2' :'li2']">
-                    <div class="menuItem"  @click="setTegel2(items,indexs)">
-                        <span>{{items.title}}</span>
-                        <span v-if="items.count">{{items.count}}</span>
-                    </div> 
-                    <tempMenu1  v-if="items.info&&(active2 == indexs)&&item.type==1" :data="items.info"></tempMenu1>
-                    <tempMenu2 v-if="items.info&&(active2 == indexs)&&item.type==2" :data="items.info"></tempMenu2>
-                </li>
+                <div v-if="item.type==3">
+                    <tempMenu1 :data="item.level"></tempMenu1>
+                </div>
+                <div v-else>
+                    <li v-for="(items,indexs) in item.level" :class="[active2 ==indexs &&item.type==2  ? 'li2 isOpened2' :'li2']">
+                        <div class="menuItem"  @click="setTegel2(items,item.type,indexs)">
+                            <span>{{items.title}}</span>
+                            <span v-if="items.count">{{items.count}}</span>
+                        </div> 
+                        <tempMenu1  v-if="items.info&&(active2 == indexs)&&item.type==1" :data="items.info"></tempMenu1>
+                        <tempMenu2 v-if="items.info&&(active2 == indexs)&&item.type==2" :data="items.info"></tempMenu2>
+                    </li>
+                </div>
             </ul>
         </li>
     </ul>
+    <button class="enterWork" @click="enterWork">进入工作台</button>
+</div>
 </template>
 
 <script>
@@ -51,20 +59,34 @@ export default {
         setTegel(item,index){//点击是地图展示所有省份的点聚合
             this.active1 = this.active1 == index?-1:index
             this.active2 = -1
-            if( this.active1==1 && item.level){
-                this.$parent.secondLevelData(item.level)
+            if(item.type=='2'){//收获地址
+                if( this.active1==1 && item.level){
+                    this.$parent.secondLevelData(item.level)
+                }
             }
-            
         },
-        setTegel2(items,index){
+        setTegel2(items,type,index){
             this.active2 = this.active2 == index?-1:index
-            this.$parent.secondLevelData(items)
+            if(type=='2'){//收获地址
+                this.$parent.Level3Data(items)
+            }
+        },
+        enterWork(){//进入工作台 跳转
         }
     }
 };
 </script>
 
 <style lang="scss" scoped>
+//菜单分类 css
+.menuCate{
+    position: absolute;
+    top: 50px;
+    left: 4%;    
+    width: 140px;
+    overflow: hidden;
+}
+
 li{cursor: pointer;}
 .li1{
     margin-bottom: 8px;
@@ -76,12 +98,16 @@ li{cursor: pointer;}
         padding: 0 10px;
     }
 }
+.ul2{
+    max-height: 200px;
+    overflow-y: auto;
+}
 .isOpened{
-    .menu-name{background-color: $C1075aa;}
+    .menu-name{background-color: $C031f4a;}
     .menuItem{display: flex;}
     .li2 span{
-        background-color: $C1075aa;
-        opacity: .5;
+        background-color: $C031f4a;
+        opacity: .8;
         color: #fff;
         padding: 0 12px;
         display: block;
@@ -96,5 +122,13 @@ li{cursor: pointer;}
 }
 .ul3_1 .li3_1 span{
     color: #fff
+}
+.enterWork{
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  color: #fff;
+  background: $C1075aa;
+  cursor: pointer;
 }
 </style>

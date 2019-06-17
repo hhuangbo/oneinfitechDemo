@@ -1,5 +1,5 @@
 const mutations={
     set_menuInfo:(state,datas) => {state.menuInfo = datas},
-    set_photoInfo:(state,datas) => {state.photoInfo = datas}
+    set_wareDataInfo:(state,datas) => {state.wareDataInfo = datas}
 }
 export default mutations

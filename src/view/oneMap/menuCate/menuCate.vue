@@ -37,7 +37,7 @@ export default {
     data() {
         return {
             menuList: [],
-            active1:0,
+            active1:-1,
             active2:-1
         };
     },
@@ -58,7 +58,8 @@ export default {
         },
         setTegel(item,index){//点击是地图展示所有省份的点聚合
             this.active1 = this.active1 == index?-1:index
-            this.active2 = -1
+            this.active2 = -1;
+            this.$store.commit('set_wareDataInfo',{});
             if(item.type=='2'){//收获地址
                 if( this.active1==1 && item.level){
                     this.$parent.secondLevelData(item.level)
@@ -67,6 +68,7 @@ export default {
         },
         setTegel2(items,type,index){
             this.active2 = this.active2 == index?-1:index
+            this.$store.commit('set_wareDataInfo',{})
             if(type=='2'){//收获地址
                 this.$parent.Level3Data(items)
             }
@@ -85,6 +87,7 @@ export default {
     left: 4%;    
     width: 140px;
     overflow: hidden;
+    z-index: 9;
 }
 
 li{cursor: pointer;}

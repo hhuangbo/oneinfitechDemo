@@ -17,7 +17,7 @@ export default {
     ],
     data(){
         return{
-            ischecked:0
+            ischecked:-1
         }
     },
     mounted(){
@@ -25,17 +25,7 @@ export default {
     methods:{
         handleSelected(item,index){
             this.ischecked=index
-            switch(item.type){
-                case'1'://仓库照片
-                    this.$store.commit('set_photoInfo',item)
-                    break;
-                case'2'://基本信息
-                    this.$store.commit('set_photoInfo',item)
-                    break;
-                case'3'://实施监控
-                    this.$store.commit('set_photoInfo',item)
-            }
-            // console.log(item)
+            this.$store.commit('set_wareDataInfo',item)
         }
     }
 }

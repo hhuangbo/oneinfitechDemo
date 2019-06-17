@@ -1,5 +1,5 @@
 <template>
-    <div class="photoInfo"  v-show="isShow">
+    <div class="photoInfo">
         <ul class="infoCont">
             <li v-for="item in phoInfoData">
                 <img :src="item.img"/>
@@ -17,9 +17,11 @@
 <script>
 import {mapGetters} from 'vuex'
 export default {
+    props:[
+        'dataInfo'
+    ],
     data(){
         return{
-            isShow:false,
             phoInfoData:[
                 {title:'整体园区',img:require('../../../assets/c1.jpg')},
                 {title:'仓库外观',img:require('../../../assets/c2.jpg')},
@@ -29,15 +31,23 @@ export default {
         }
     },
     computed:{
-        ...mapGetters(['photoInfo'])
+        // ...mapGetters(['wareDataInfo'])
+    },
+    watch:{
+        // wareDataInfo(data){
+        //     console.log(data)
+        // }
+        dataInfo(res){
+            console.log(res);
+            
+        }
     },
     mounted(){
         this.init()
     },
     methods:{
         init(){
-            console.log(this.$store.state.photoInfo)
-            if(this.$store.state.photoInfo != ''){this.isShow=true;}
+            
         },
         handleEnlarge(){//点击放大
             console.log('放大');
@@ -61,7 +71,7 @@ export default {
     position: absolute;
     top: 30%;
     left: 0;
-    z-index: 9;
+    z-index: 8;
     background: rgba(16, 117, 170, 0.77);
     color: #fff;
     .infoCont{

@@ -1,5 +1,5 @@
 const getters={
     menuInfo:state => state.menuInfo,
-    photoInfo:state => state.photoInfo,
+    wareDataInfo:state => state.wareDataInfo,
 }
 export default getters

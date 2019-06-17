@@ -2,9 +2,10 @@
     <div class="mapContent">
         <div class="oneMap" id="container"></div>
         <menuCate ></menuCate>
-
-        <photoInfo ><!--仓库照片弹框--></photoInfo>
-        <warehInfo><!--仓库基本信息弹框--></warehInfo>
+        <transition @click="photoInfo.type=4">
+            <photoInfo :dataInfo="wareDataInfo" v-if="wareDataInfo && wareDataInfo.type==1 || wareDataInfo.type==3"/><!--仓库照片弹框-->
+        </transition>
+        <warehInfo :dataInfo="wareDataInfo" v-if="wareDataInfo && wareDataInfo.type==2"/><!--仓库基本信息弹框-->
     </div>
 </template>
 
@@ -51,7 +52,7 @@ export default {
         // this._onZoomEnd()
     },
     computed:{
-        ...mapGetters(['menuInfo'])
+        ...mapGetters(['menuInfo','wareDataInfo'])
     },
     mounted(){
         var that=this;

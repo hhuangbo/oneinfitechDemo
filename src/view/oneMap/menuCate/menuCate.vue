@@ -7,7 +7,7 @@
             </span>
             <ul class="ul2" v-if="item.level&&(active1 == index)">
                 <div v-if="item.type==3">
-                    <tempMenu1 :data="item.level"></tempMenu1>
+                    <menuType1 :data="item.level" :mType="item.type"/>
                 </div>
                 <div v-else>
                     <li v-for="(items,indexs) in item.level" :class="[active2 ==indexs &&item.type==2  ? 'li2 isOpened2' :'li2']">
@@ -15,8 +15,8 @@
                             <span>{{items.title}}</span>
                             <span v-if="items.count">{{items.count}}</span>
                         </div> 
-                        <tempMenu1  v-if="items.info&&(active2 == indexs)&&item.type==1" :data="items.info"></tempMenu1>
-                        <tempMenu2 v-if="items.info&&(active2 == indexs)&&item.type==2" :data="items.info"></tempMenu2>
+                        <menuType1  v-if="items.info&&(active2 == indexs)&&item.type==1" :data="items.info" :mType="item.type"/>
+                        <menuType2 v-if="items.info&&(active2 == indexs)&&item.type==2" :data="items.info" />
                     </li>
                 </div>
             </ul>
@@ -27,12 +27,12 @@
 </template>
 
 <script>
-import tempMenu1 from './menuType1'
-import tempMenu2 from './menuTyp2'
+import menuType1 from './menuType1'
+import menuType2 from './menuTyp2'
 export default {
     components:{
-        tempMenu1,
-        tempMenu2
+        menuType1,
+        menuType2
     },
     data() {
         return {

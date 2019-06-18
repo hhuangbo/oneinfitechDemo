@@ -2,10 +2,11 @@
     <div class="mapContent">
         <div class="oneMap" id="container"></div>
         <menuCate ></menuCate>
-        <transition @click="photoInfo.type=4">
+        <transition >
             <photoInfo :dataInfo="wareDataInfo" v-if="wareDataInfo && wareDataInfo.type==1 || wareDataInfo.type==3"/><!--仓库照片弹框-->
         </transition>
         <warehInfo :dataInfo="wareDataInfo" v-if="wareDataInfo && wareDataInfo.type==2"/><!--仓库基本信息弹框-->
+        <div id="panel"></div>
     </div>
 </template>
 
@@ -44,15 +45,22 @@ export default {
     created(){
 
     },
+    computed:{
+        ...mapGetters([
+            'menuInfo',
+            'wareDataInfo',//仓库地址
+            'serviceData'//服务订单
+        ])
+    },
     watch:{
         menuInfo(data){
             console.log(data);
             
+        },
+        serviceData(res){
+            console.log('哈哈哈',res)
         }
         // this._onZoomEnd()
-    },
-    computed:{
-        ...mapGetters(['menuInfo','wareDataInfo'])
     },
     mounted(){
         var that=this;
@@ -62,7 +70,7 @@ export default {
             that._onZoomEnd()
         });
         
-        
+        this.serviceInit()
         // this.addCluster()
     },
     methods:{
@@ -76,36 +84,11 @@ export default {
         },
         secondLevelData(data){//左侧菜单点击取值 子组件1
             // this.markers.push(data.lng,data.lat)
-            this.province(data)
+            if(data){this.province(data)}
         },
         Level3Data(data){//左侧菜单点击取值 子组件2级
-            this.cityInit(data)
-        },
-        _onZoomEnd(){//监听地图缩放
-            var _this=this;
-            if (this.map.getZoom() < 7) {//全国下的省份
-            console.log('ssss')
-            //     for (var i = 0; i < this.markers.length; i += 1) {
-            //         this.map.remove(this.markers[i].subMarkers);
-            //     }
-            //    this.map.add(this.markers);
-             
-            this.map.remove(this.markersTwo)//移除不再层级的点聚合
-            this.province(JSON.parse(localStorage.getItem('markersDatas')))
-            // _this.markers.push(localStorage.getItem('markersDatas'))
-            }else if((this.map.getZoom() < 9) && (this.map.getZoom() > 7)){//省份下的市
-                // for (var i = 0; i < this.markersTwo.length; i += 1) {
-                //     this.map.remove(this.markersTwo[i].subMarkers);
-                // }
-                // this.map.add(this.markersTwo);
-                this.map.remove(this.markers)
-                // this.cityInit(JSON.parse(localStorage.getItem('markersTwoDatas')))
-            }else if(this.map.getZoom() < 14 && this.map.getZoom() > 9){//市下面的区或县
-                // for (var i = 0; i < markersThree.length; i += 1) {
-                //     map.remove(markersThree[i].subMarkers);
-                // }
-                // map.add(markersThree);
-            }
+            if(data){this.cityInit(data)}
+            
         },
         province(data){////省
             var _this=this
@@ -172,6 +155,110 @@ export default {
         areaInit(){//区
             this.map.setZoomAndCenter(12);//设置地图层级
         },
+        serviceInit(data){//交付轨迹
+            console.log(data)
+            var _this=this;
+               //调用 Driving
+            _this.map.plugin(["AMap.TruckDriving"],function() {
+                 var truckDriving = new AMap.TruckDriving({
+                    policy: 0, // 规划策略
+                    size: 1, // 车型大小
+                    width: 2.5, // 宽度
+                    height: 2, // 高度      
+                    load: 1, // 载重
+                    weight: 12, // 自重
+                    axlesNum: 2, // 轴数
+                    province: '京', // 车辆牌照省份
+                })
+                // 根据起终点经纬度规划驾车导航路线
+                var path=[]
+                path.push({lnglat:[116.43014,39.911172]});//起点
+                // path.push({lnglat:[116.321354, 39.896436]});//途径
+                path.push({lnglat:[114.471978,38.066285]});//终点
+                truckDriving.search(path, function(status, result) {
+                    // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
+                    console.log(status, result)
+                    if (status === 'complete') {
+                        console.log('绘制货车路线完成')
+                        if (result.routes && result.routes.length) {
+                            _this.drawRoute(result.routes[0]) 
+                        }
+                    } else {
+                        console.log('获取货车数据失败：' + result)
+                    }
+                });
+            })
+        },
+        drawRoute(route){
+            var _this=this;
+            var path = _this.parseRouteToPath(route);
+            var difineICON=require('../../assets/difineDir1.png');
+            var iconSize=new AMap.Size(40, 40);
+            var startMarker = new AMap.Marker({//起点
+                position: path[0],
+                size: iconSize,
+                icon: require('../../assets/difineDir1.png'),//'http://a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png',
+                offset: new AMap.Pixel(-13, -30),
+                map: _this.map
+            })
+            var endMarker = new AMap.Marker({//终点
+                position: path[path.length - 1],
+                size: iconSize,
+                icon: require('../../assets/difineDir2.png'),//'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
+                imageSize: new AMap.Size(40, 40),
+                imageOffset: new AMap.Pixel(-95, -3),
+                map: _this.map
+            })
+            var routeLine = new AMap.Polyline({
+                path: path,
+                isOutline: true,
+                outlineColor: '#031f4a',
+                borderWeight: 2,
+                strokeWeight: 2,
+                strokeColor: '#031f4a',
+                lineJoin: 'round'
+            })
+            routeLine.setMap(this.map)
+             // 调整视野达到最佳显示区域
+            _this.map.setFitView([ startMarker, endMarker, routeLine ])
+        },
+         parseRouteToPath(route) {//解析DrivingRoute对象
+            var path = []
+            for (var i = 0, l = route.steps.length; i < l; i++) {
+                var step = route.steps[i]
+
+                for (var j = 0, n = step.path.length; j < n; j++) {
+                    path.push(step.path[j])
+                }
+            }
+            return path
+        },
+        _onZoomEnd(){//监听地图缩放
+            var _this=this;
+            if (this.map.getZoom() < 7) {//全国下的省份
+            console.log('ssss')
+            //     for (var i = 0; i < this.markers.length; i += 1) {
+            //         this.map.remove(this.markers[i].subMarkers);
+            //     }
+            //    this.map.add(this.markers);
+             
+            this.map.remove(this.markersTwo)//移除不再层级的点聚合
+            this.province(JSON.parse(localStorage.getItem('markersDatas')))
+            // _this.markers.push(localStorage.getItem('markersDatas'))
+            }else if((this.map.getZoom() < 9) && (this.map.getZoom() > 7)){//省份下的市
+                // for (var i = 0; i < this.markersTwo.length; i += 1) {
+                //     this.map.remove(this.markersTwo[i].subMarkers);
+                // }
+                // this.map.add(this.markersTwo);
+                this.map.remove(this.markers)
+                // this.cityInit(JSON.parse(localStorage.getItem('markersTwoDatas')))
+            }else if(this.map.getZoom() < 14 && this.map.getZoom() > 9){//市下面的区或县
+                // for (var i = 0; i < markersThree.length; i += 1) {
+                //     map.remove(markersThree[i].subMarkers);
+                // }
+                // map.add(markersThree);
+            }
+        },
         _renderClusterMarker(context) { 
             var count = this.markers.length;
             var factor = Math.pow(context.count / count, 1 / 18);
@@ -218,7 +305,9 @@ export default {
     // position: relative;
 }
 
-
+#panel{    position: absolute;
+    right: 0;
+    width: 200px;}
 
 </style>
 <style>

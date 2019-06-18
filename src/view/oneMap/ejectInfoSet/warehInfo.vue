@@ -1,11 +1,11 @@
 <template>
-    <div class="warehInfo">
-        <div class="park parkLayOut" >
+    <div class="warehInfo" >
+        <div class="park parkLayOut" v-show="parkLayOutShow">
             <div class="wareHead">
                 <label>{{parkLayOut.title}}</label>
                 <div class="toolRight">
                     <i class="iconfont icon-e60b"></i>  
-                    <i class="iconfont icon-close" @click="handleCurrClose()"></i>  
+                    <i class="iconfont icon-close" @click="handleCurrClose(1)"></i>  
                 </div>
             </div>
             <div class="cont">
@@ -16,12 +16,12 @@
                 </ul>
             </div>
         </div>
-        <div class=" park parkSet">
+        <div class=" park parkSet" v-show="parkSetShow">
             <div class="wareHead">
                 <label>{{parkSet.title}}</label>
                 <div class="toolRight">
                     <i class="iconfont icon-e60b"></i>  
-                    <i class="iconfont icon-close" @click="handleCurrClose"></i>  
+                    <i class="iconfont icon-close" @click="handleCurrClose(2)"></i>  
                 </div>
             </div>
             <ul class="cont">
@@ -41,6 +41,8 @@ export default {
     data(){
         return{
             ischecked:0,
+            parkSetShow:true,
+            parkLayOutShow:true,
             parkLayOut:{
                 title:'园区布局',
                 info:[
@@ -70,8 +72,8 @@ export default {
         handleChecked(item,index){
             this.ischecked=index;//点击选中当前项
         },
-        handleCurrClose(){//关闭当前窗口
-
+        handleCurrClose(data){//关闭当前窗口
+            data == 1 ? this.parkLayOutShow = false : this.parkSetShow = false
         },
         handleMoreSet(){//更多配置
 

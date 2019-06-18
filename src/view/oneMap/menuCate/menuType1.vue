@@ -3,9 +3,7 @@
     <div class="tempMenu1">
         <li v-for="(item,index) in data" :class="[ischecked==index ? 'ischecked' : '']">
              <span class="checkbox__label">{{item.title}}</span>
-             <span class="checkbox-inner"  @click="handleSelected(item,index)"></span>
-            <!-- <el-checkbox :label="item" :key="index"  @change="handleCheckedCitiesChange">{{item.title}}</el-checkbox> -->
-            <!-- <el-checkbox :label="item.title"border></el-checkbox> -->
+             <span class="checkbox-inner"  @click="handleSelected(item,index,mType)"></span>
         </li>
     </div>
 </template>
@@ -13,7 +11,7 @@
 <script>
 export default {
     props:[
-        'data'
+        'data','mType'
     ],
     data(){
         return{
@@ -23,9 +21,18 @@ export default {
     mounted(){
     },
     methods:{
-        handleSelected(item,index){
+        handleSelected(item,index,mType){
             this.ischecked=index
-            this.$store.commit('set_wareDataInfo',item)
+            switch(mType){
+                case '1'://仓库地址
+                    this.$store.commit('set_wareDataInfo',item)
+                    break;
+                case '3'://服务订单
+                console.log('随时随地',item)
+                    this.$store.commit('set_serviceData',item)
+                    // this.$parent.serviceInit(item)
+                    break;
+            }
         }
     }
 }

@@ -35,8 +35,8 @@ export default {
     },
     watch:{
         // wareDataInfo(data){
-        //     console.log(data)
-        // }
+        //     console.log('永远永远',data)
+        // },
         dataInfo(res){
             console.log(res);
             
@@ -76,7 +76,7 @@ export default {
     color: #fff;
     .infoCont{
         display: flex;
-        padding: 2% 10%;
+        padding: 2% 10% 0;
         li{text-align: center;margin: 0 10px;}
         img{display: block;width: 75%;margin: 0 auto;}
         span{line-height: 30px;}

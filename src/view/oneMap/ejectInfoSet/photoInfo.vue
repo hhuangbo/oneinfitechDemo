@@ -1,17 +1,17 @@
 <template>
-    <div class="photoInfo">
-        <ul class="infoCont">
-            <li v-for="item in phoInfoData">
-                <img :src="item.img"/>
-                <span>{{item.title}}</span>
-            </li>
-        </ul>
-        <div class="viewTool">
-            <i class="iconfont icon-enlarge" @click="handleEnlarge"></i>
-            <i class="iconfont icon-narrow" @click="handleNarrow"></i>
-            <i class="iconfont icon-refresh" @click="handleRefresh"></i>
-        </div>
+<div class="photoInfo">
+    <ul class="infoCont">
+        <li v-for="item in phoInfoData">
+            <img :src="item.img"/>
+            <span>{{item.title}}</span>
+        </li>
+    </ul>
+    <div class="viewTool">
+        <i class="iconfont icon-enlarge" @click="handleEnlarge"></i>
+        <i class="iconfont icon-narrow" @click="handleNarrow"></i>
+        <i class="iconfont icon-refresh" @click="handleRefresh"></i>
     </div>
+</div>
 </template>
 
 <script>

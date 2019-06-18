@@ -6,7 +6,7 @@
                 {{item.title}}
             </span>
             <transition>
-                <ul class="ul2 collapse-transition collapse-transitions" v-if="item.level&&(active1 == index)">
+                <ul class="ul2" v-if="item.level&&(active1 == index)">
                     <div v-if="item.type==3">
                         <menuType1 :data="item.level" :mType="item.type"/>
                     </div>
@@ -62,9 +62,10 @@ export default {
             this.active1 = this.active1 == index?-1:index
             this.active2 = -1;
             this.$store.commit('set_wareDataInfo',{});
+            console.log('哈哈哈',this.active1)
             if(item.type=='2'){//收获地址
                 if( this.active1==1 && item.level){
-                    this.$parent.secondLevelData(item.level)
+                    this.$parent.secondLevelData(item,this.active1)
                 }
             }
         },
@@ -107,8 +108,8 @@ li{cursor: pointer;}
     max-height: 200px;
     overflow-y: auto;
 }
-.collapse-transition{transition:height .3s ease-in-out,padding-top .3s ease-in-out,padding-bottom .3s ease-in-out}
-.collapse-transitions{transition:height .3s ease-in}
+// .collapse-transition{transition:height .3s ease-in-out,padding-top .3s ease-in-out,padding-bottom .3s ease-in-out}
+// .collapse-transitions{transition:height .3s ease-in}
 
 .isOpened{
     .menu-name{background-color: $C031f4a;}

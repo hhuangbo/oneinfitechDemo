@@ -3,9 +3,9 @@
         <div class="oneMap" id="container"></div>
         <menuCate ></menuCate>
         <transition >
-            <photoInfo :dataInfo="wareDataInfo" v-if="wareDataInfo && wareDataInfo.type==1 || wareDataInfo.type==3"/><!--仓库照片弹框-->
+            <photoInfo :dataInfo="wareDataInfo" :class="[wareDataInfo.type ==1 || wareDataInfo.type==3 ? 'animated zoomIn' : 'animated zoomOut' ]" v-if="wareDataInfo && wareDataInfo.type==1 || wareDataInfo.type==3"/><!--仓库照片弹框-->
+            <warehInfo :dataInfo="wareDataInfo" class="animated fadeInRight" v-if="wareDataInfo && wareDataInfo.type==2"/><!--仓库基本信息弹框-->
         </transition>
-        <warehInfo :dataInfo="wareDataInfo" v-if="wareDataInfo && wareDataInfo.type==2"/><!--仓库基本信息弹框-->
         <div id="panel"></div>
     </div>
 </template>
@@ -57,10 +57,13 @@ export default {
             console.log(data);
             
         },
+        wareDataInfo(){
+            
+            // this.map.remove(this.markers)//清除省份聚合点
+            // this.map.remove(this.markersTwo)
+        },
         serviceData(res){
             console.log('哈哈哈',res)
-            this.map.remove(this.markers)//清除省份聚合点
-            this.map.remove(this.markersTwo)
             if(res.type==1){
                 this.serviceInit()
             }
@@ -87,9 +90,10 @@ export default {
                 viewMode: '2D'
             })                
         },
-        secondLevelData(data){//左侧菜单点击取值 子组件1
+        secondLevelData(data,act){//左侧菜单点击取值 子组件1
             // this.markers.push(data.lng,data.lat)
-            if(data){this.province(data)}
+            // if(act ==1 ){console.log('有了');this.removeAllOverlay()} 
+            if(data){this.province(data.level)}
         },
         Level3Data(data){//左侧菜单点击取值 子组件2级
             if(data){this.cityInit(data)}
@@ -160,6 +164,7 @@ export default {
         areaInit(){//区
             this.map.setZoomAndCenter(12);//设置地图层级
         },
+        infosdasd(){console.log('我是测试鼠标移入')},
         serviceInit(data){//交付轨迹
             console.log(data)
             var _this=this;
@@ -181,12 +186,10 @@ export default {
                 // path.push({lnglat:[116.321354, 39.896436]});//途径
                 path.push({lnglat:[114.471978,38.066285]});//终点
                 truckDriving.search(path, function(status, result) {
-                    
-                    console.log(status, result)
                     if (status === 'complete') {
                         console.log('绘制货车路线完成')
                         if (result.routes && result.routes.length) {
-                            _this.drawRoute(result.routes[0]) 
+                            _this.drawRoute(result.routes[0]);//路线 
                         }
                     } else {
                         console.log('获取货车数据失败：' + result)
@@ -206,6 +209,12 @@ export default {
                 offset: new AMap.Pixel(-13, -30),
                 map: _this.map
             })
+             startMarker.setLabel({
+                offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                direction: 'right', //设置文本标注方位
+            });
+            // startMarker.on('mousemove',_this.infosdasd)
             var endMarker = new AMap.Marker({//终点
                 position: path[path.length - 1],
                 size: iconSize,
@@ -214,12 +223,17 @@ export default {
                 imageOffset: new AMap.Pixel(-95, -3),
                 map: _this.map
             })
+             endMarker.setLabel({
+                offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                direction: 'right', //设置文本标注方位
+            });
             var routeLine = new AMap.Polyline({
                 path: path,
                 isOutline: true,
-                outlineColor: '#031f4a',
-                borderWeight: 2,
-                strokeWeight: 2,
+                // outlineColor: '#031f4a',
+                // borderWeight: 2,
+                strokeWeight: 3,
                 strokeColor: '#031f4a',
                 lineJoin: 'round'
             })
@@ -293,6 +307,9 @@ export default {
                 this.markers.setMap(null);
                 this.markers = null;
             }
+        },
+        removeAllOverlay(){ // 清除地图上所有添加的覆盖物
+            this.map.clearMap();
         }
     }
 }
@@ -310,12 +327,21 @@ export default {
     // position: relative;
 }
 
-#panel{    position: absolute;
-    right: 0;
-    width: 200px;}
+.infoTips{
+    
+}
 
 </style>
 <style>
+.amap-marker-label{
+    background-color: #031f4a;
+    color: #fff;
+    opacity: .9;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+
 .amap-logo,.amap-copyright{
     display: none !important;
     opacity:0 !important;

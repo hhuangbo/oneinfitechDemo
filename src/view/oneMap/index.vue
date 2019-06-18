@@ -59,6 +59,11 @@ export default {
         },
         serviceData(res){
             console.log('哈哈哈',res)
+            this.map.remove(this.markers)//清除省份聚合点
+            this.map.remove(this.markersTwo)
+            if(res.type==1){
+                this.serviceInit()
+            }
         }
         // this._onZoomEnd()
     },
@@ -70,7 +75,7 @@ export default {
             that._onZoomEnd()
         });
         
-        this.serviceInit()
+        
         // this.addCluster()
     },
     methods:{
@@ -176,7 +181,7 @@ export default {
                 // path.push({lnglat:[116.321354, 39.896436]});//途径
                 path.push({lnglat:[114.471978,38.066285]});//终点
                 truckDriving.search(path, function(status, result) {
-                    // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
+                    
                     console.log(status, result)
                     if (status === 'complete') {
                         console.log('绘制货车路线完成')
@@ -189,7 +194,7 @@ export default {
                 });
             })
         },
-        drawRoute(route){
+        drawRoute(route){//点标记
             var _this=this;
             var path = _this.parseRouteToPath(route);
             var difineICON=require('../../assets/difineDir1.png');

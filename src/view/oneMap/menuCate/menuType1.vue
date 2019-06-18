@@ -28,7 +28,6 @@ export default {
                     this.$store.commit('set_wareDataInfo',item)
                     break;
                 case '3'://服务订单
-                console.log('随时随地',item)
                     this.$store.commit('set_serviceData',item)
                     // this.$parent.serviceInit(item)
                     break;

@@ -5,21 +5,23 @@
             <span @click="setTegel(item,index)" class="menu-name">
                 {{item.title}}
             </span>
-            <ul class="ul2" v-if="item.level&&(active1 == index)">
-                <div v-if="item.type==3">
-                    <menuType1 :data="item.level" :mType="item.type"/>
-                </div>
-                <div v-else>
-                    <li v-for="(items,indexs) in item.level" :class="[active2 ==indexs &&item.type==2  ? 'li2 isOpened2' :'li2']">
-                        <div class="menuItem"  @click="setTegel2(items,item.type,indexs)">
-                            <span>{{items.title}}</span>
-                            <span v-if="items.count">{{items.count}}</span>
-                        </div> 
-                        <menuType1  v-if="items.info&&(active2 == indexs)&&item.type==1" :data="items.info" :mType="item.type"/>
-                        <menuType2 v-if="items.info&&(active2 == indexs)&&item.type==2" :data="items.info" />
-                    </li>
-                </div>
-            </ul>
+            <transition>
+                <ul class="ul2 collapse-transition collapse-transitions" v-if="item.level&&(active1 == index)">
+                    <div v-if="item.type==3">
+                        <menuType1 :data="item.level" :mType="item.type"/>
+                    </div>
+                    <div v-else>
+                        <li v-for="(items,indexs) in item.level" :class="[active2 ==indexs &&item.type==2  ? 'li2 isOpened2' :'li2']">
+                            <div class="menuItem"  @click="setTegel2(items,item.type,indexs)">
+                                <span>{{items.title}}</span>
+                                <span v-if="items.count">{{items.count}}</span>
+                            </div> 
+                            <menuType1  v-if="items.info&&(active2 == indexs)&&item.type==1" :data="items.info" :mType="item.type"/>
+                            <menuType2 v-if="items.info&&(active2 == indexs)&&item.type==2" :data="items.info" />
+                        </li>
+                    </div>
+                </ul>
+            </transition>
         </li>
     </ul>
     <button class="enterWork" @click="enterWork">进入工作台</button>
@@ -105,6 +107,9 @@ li{cursor: pointer;}
     max-height: 200px;
     overflow-y: auto;
 }
+.collapse-transition{transition:height .3s ease-in-out,padding-top .3s ease-in-out,padding-bottom .3s ease-in-out}
+.collapse-transitions{transition:height .3s ease-in}
+
 .isOpened{
     .menu-name{background-color: $C031f4a;}
     .menuItem{display: flex;}

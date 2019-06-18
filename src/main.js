@@ -8,7 +8,7 @@ import store from './store'
 
 import 'element-ui/lib/theme-chalk/index.css';
 
-// import 'animate.css'
+import 'animate.css'
 
 import './common/css/updateElementcss.scss';
 import './common/css/global.scss'

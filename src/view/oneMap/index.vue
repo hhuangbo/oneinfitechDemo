@@ -42,9 +42,10 @@ export default {
             markers:[],
             markersTwo:[],
             TruckDMarker:{
-                startMarker:[],endMarker:[],routeLine:[]
+                startMarker:[],endMarker:[],endMarker2:[],routeLine:[]
             },
-            cluster:null
+            cluster:null,
+            travelCar:null//巡航
         }
     },
     created(){
@@ -55,22 +56,20 @@ export default {
             'menuActive',
             'menuInfo',
             'wareDataInfo',//仓库地址
-            'serviceData'//服务订单
         ])
     },
     watch:{
         menuActive(data){
-            console.log(data)
             if(data !=1){
                 this.map.clearMap()//清除全部覆盖物
-                // this.map.remove(this.markers)
-                // this.map.remove(this.markersTwo)//移除不再层级的点聚合
+                this.travelCar.destroy()//销毁巡航器
+                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
             }else if(data==1){
                 this.map.setZoom(5)
-                 this.map.remove([this.TruckDMarker.startMarker,this.TruckDMarker.endMarker,this.TruckDMarker.routeLine])
-                 
-                //  this.map.remove(this.startMarker)
-            }//移除不再层级的点聚合
+                this.travelCar.destroy()//销毁巡航器
+                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
+                 this.map.remove([this.TruckDMarker.startMarker,this.TruckDMarker.endMarker,this.TruckDMarker.endMarker2,this.TruckDMarker.routeLine])
+            }
         },
         menuInfo(data){
             console.log(data);
@@ -81,11 +80,6 @@ export default {
             // this.map.remove(this.markers)//清除省份聚合点
             // this.map.remove(this.markersTwo)
         },
-        serviceData(res){
-            if(res.type==1){
-                this.serviceInit()
-            }
-        }
     },
     mounted(){
         var that=this;
@@ -103,7 +97,6 @@ export default {
         //     //   this.map.remove(this.markersTwo)//移除不再层级的点聚合
         // }
         // this.addCluster()
- 
     },
     methods:{
         mapInit(){//初始创建地图
@@ -211,17 +204,6 @@ export default {
         serviceInit(data){//交付轨迹
             var _this=this;
             _this.map.remove(_this.markers)
-            //参考   https://blog.csdn.net/b954960630/article/details/79229556
-                var pathSimplifierIns = new PathSimplifier({
-                        zIndex: 100,
-                        //autoSetFitView:false,
-                        map: _this.map, //所属的地图实例
-                  })
-                pathSimplifierIns.setData([{
-                    name: '路线0',
-                    path: path
-                }]);
-
                //调用 Driving
             _this.map.plugin(["AMap.TruckDriving"],function() {
                  var truckDriving = new AMap.TruckDriving({
@@ -253,6 +235,135 @@ export default {
                     }
                 });
             })
+        },
+        simplifierInit(){//交付轨迹
+            var _this=this;
+            AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
+                if (!PathSimplifier.supportCanvas) {
+                    alert('当前环境不支持 Canvas！');
+                    return;
+                }
+                //启动页面
+                _this.set_initPage(PathSimplifier);
+            });
+        },
+        set_initPage(PathSimplifier) {
+            var _this=this;
+            //创建组件实例
+            var pathSimplifierIns = new PathSimplifier({
+                zIndex: 100,
+                map: _this.map, //所属的地图实例
+                getPath: function(pathData, pathIndex) {
+                    //返回轨迹数据中的节点坐标信息，[AMap.LngLat, AMap.LngLat...] 或者 [[lng|number,lat|number],...]
+                    return pathData.path;
+                },
+                getHoverTitle: function(pathData, pathIndex, pointIndex) {
+                    //返回鼠标悬停时显示的信息
+                    if (pointIndex >= 0) {
+                        //鼠标悬停在某个轨迹节点上
+                        return pathData.name// + '，点:' + pointIndex + '/' + pathData.path.length;
+                    }
+                    //鼠标悬停在节点之间的连线上
+                    return pathData.name// + '，点数量' + pathData.path.length;
+                },
+                renderOptions: {
+                    //轨迹线的样式
+                    pathLineStyle: {
+                        strokeStyle: '#28F',
+                        lineWidth: 6,
+                        dirArrowStyle: true
+                    }
+                }
+            });
+            window.pathSimplifierIns=pathSimplifierIns
+            //轨迹
+            pathSimplifierIns.setData([{
+                name: '轨迹1',
+                path: [
+                    [121.805065,31.145348],
+                    [121.776569,31.185742],
+                    [121.739491,31.183392],
+                    [121.700352,31.168117],
+                    [121.634434,31.156954],
+                    [121.597355,31.164004],
+                    [121.556843,31.205712],
+                    [121.525257,31.229201],
+                    [121.484058,31.236246]
+                ]
+            }, {
+                name: '轨迹2',
+                path: [
+                    [121.805065,31.145348], 
+                    [121.816395,31.102879],
+                    [121.753224,31.095824],
+                    [121.677693,31.102291],
+                    [121.594608,31.122867],
+                    [121.560276,31.122279]
+                    ]
+            }]);
+            console.log('轨迹',pathSimplifierIns)
+            // var Iconpath = _this.parseRouteToPath(route);
+            var iconSize=new AMap.Size(40, 40);
+            _this.TruckDMarker.startMarker = new AMap.Marker({//起点
+                position: [121.802319,31.139471],
+                size: iconSize,
+                icon: require('../../assets/difineDir1.png'),
+                offset: new AMap.Pixel(-13, -30),
+                map: _this.map
+            })
+             _this.TruckDMarker.startMarker.setLabel({
+                offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                direction: 'right', //设置文本标注方位
+            }); 
+            _this.TruckDMarker.endMarker = new AMap.Marker({//终点
+                position: [121.484058,31.236246],
+                size: iconSize,
+                icon: require('../../assets/difineDir2.png'),//'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
+                imageSize: new AMap.Size(40, 40),
+                imageOffset: new AMap.Pixel(-95, -3),
+                map: _this.map
+            })
+            _this.TruckDMarker.endMarker.setLabel({
+                offset: new AMap.Pixel(0, 10),  //设置文本标注偏移量
+                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                direction: 'left', //设置文本标注方位
+            });
+            _this.TruckDMarker.endMarker2 = new AMap.Marker({//终点
+                position: [121.560276,31.122279],
+                size: iconSize,
+                icon: require('../../assets/difineDir2.png'),//'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
+                imageSize: new AMap.Size(40, 40),
+                imageOffset: new AMap.Pixel(-95, -3),
+                map: _this.map
+            })
+            _this.TruckDMarker.endMarker2.setLabel({
+                offset: new AMap.Pixel(5, 1),  //设置文本标注偏移量
+                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                direction: 'bottom', //设置文本标注方位
+            });
+            _this.travelCar = pathSimplifierIns.createPathNavigator(0, {
+                loop: true,
+                speed: 5000,
+                pathNavigatorStyle: {
+                    width: 50,
+                    height: 40,
+                    autoRotate:true,
+                    content: PathSimplifier.Render.Canvas.getImageContent(require('../../assets/car.png'), onload, onerror),
+                    strokeStyle: null,
+                    fillStyle: null,
+                    //经过路径的样式
+                    pathLinePassedStyle: {
+                        lineWidth: 6,
+                        strokeStyle: '#0f9532',
+                        dirArrowStyle: {
+                            stepSpace: 15,
+                            strokeStyle: '#fff'
+                        }
+                    }
+                }
+            });
+            _this.travelCar.start();
         },
         drawRoute(route){//点标记
             var _this=this;

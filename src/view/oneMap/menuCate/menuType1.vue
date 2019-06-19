@@ -29,8 +29,8 @@ export default {
                     this.$store.commit('set_wareDataInfo',item)
                     break;
                 case '3'://服务订单
-                    this.$store.commit('set_serviceData',item)
-                    // this.$parent.serviceInit(item)
+                    // this.$store.commit('set_serviceData',item)
+                    this.$parent.set_serviceCompValue(item)
                     // this.$emit('serviceD',item)
                     break;
             }

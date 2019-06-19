@@ -58,6 +58,10 @@ export default {
             console.log(err);
             });
         },
+        set_serviceCompValue(data){
+        //     this.$parent.serviceInit(data)
+            this.$parent.simplifierInit(data)
+        },
         setTegel(item,index){//点击是地图展示所有省份的点聚合
             this.active1 = this.active1 == index?-1:index
             this.active2 = -1;

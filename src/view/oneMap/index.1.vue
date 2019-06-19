@@ -211,17 +211,6 @@ export default {
         serviceInit(data){//交付轨迹
             var _this=this;
             _this.map.remove(_this.markers)
-            //参考   https://blog.csdn.net/b954960630/article/details/79229556
-                var pathSimplifierIns = new PathSimplifier({
-                        zIndex: 100,
-                        //autoSetFitView:false,
-                        map: _this.map, //所属的地图实例
-                  })
-                pathSimplifierIns.setData([{
-                    name: '路线0',
-                    path: path
-                }]);
-
                //调用 Driving
             _this.map.plugin(["AMap.TruckDriving"],function() {
                  var truckDriving = new AMap.TruckDriving({
@@ -241,7 +230,6 @@ export default {
                 path.push({lnglat:[121.396582,31.245129]});//途径
                 path.push({lnglat:[121.544897,31.219882]});//途径
                 path.push({lnglat:[121.382162,31.108247]});//终点
-                
                 truckDriving.search(path, function(status, result) {
                     if (status === 'complete') {
                         console.log('绘制货车路线完成')

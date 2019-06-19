@@ -1,9 +1,9 @@
 <template>
     <!-- 组件--普通列表 -->
     <div class="tempMenu1">
-        <li v-for="(item,index) in data" :class="[ischecked==index ? 'ischecked' : '']">
+        <li v-for="(item,index) in data" :class="[ischecked==index ? 'ischecked' : '']"  @click="handleSelected(item,index,mType)">
              <span class="checkbox__label">{{item.title}}</span>
-             <span class="checkbox-inner"  @click="handleSelected(item,index,mType)"></span>
+             <span class="checkbox-inner" ></span>
         </li>
     </div>
 </template>
@@ -23,6 +23,7 @@ export default {
     methods:{
         handleSelected(item,index,mType){
             this.ischecked=index
+            console.log('mType',mType)
             switch(mType){
                 case '1'://仓库地址
                     this.$store.commit('set_wareDataInfo',item)
@@ -30,6 +31,7 @@ export default {
                 case '3'://服务订单
                     this.$store.commit('set_serviceData',item)
                     // this.$parent.serviceInit(item)
+                    // this.$emit('serviceD',item)
                     break;
             }
         }

@@ -1,6 +1,6 @@
 <template>
 <div class="menuCate">
-    <ul class="">
+    <ul class="ul1">
         <li v-for="(item,index) in menuList" :class="[active1==index ? 'li1 isOpened' :'li1']">
             <span @click="setTegel(item,index)" class="menu-name">
                 {{item.title}}
@@ -62,6 +62,7 @@ export default {
             this.active1 = this.active1 == index?-1:index
             this.active2 = -1;
             this.$store.commit('set_wareDataInfo',{});
+            this.$store.commit('set_menuActive',this.active1);
             console.log('哈哈哈',this.active1)
             if(item.type=='2'){//收获地址
                 if( this.active1==1 && item.level){
@@ -72,11 +73,13 @@ export default {
         setTegel2(items,type,index){
             this.active2 = this.active2 == index?-1:index
             this.$store.commit('set_wareDataInfo',{})
+            this.$store.commit('set_menuActive',this.active1);
             if(type=='2'){//收获地址
                 this.$parent.Level3Data(items)
             }
         },
         enterWork(){//进入工作台 跳转
+            alert('进入壹站工作台...')
         }
     }
 };
@@ -88,9 +91,14 @@ export default {
     position: absolute;
     top: 50px;
     left: 4%;    
-    width: 140px;
+    width: 150px;
+    height:85%;
     overflow: hidden;
     z-index: 9;
+    .ul1{
+        max-height: 70%;
+        overflow-y: auto;
+    }
 }
 
 li{cursor: pointer;}
@@ -105,8 +113,8 @@ li{cursor: pointer;}
     }
 }
 .ul2{
-    max-height: 200px;
-    overflow-y: auto;
+    // max-height: 200px;
+    // overflow-y: auto;
 }
 // .collapse-transition{transition:height .3s ease-in-out,padding-top .3s ease-in-out,padding-bottom .3s ease-in-out}
 // .collapse-transitions{transition:height .3s ease-in}
@@ -135,6 +143,7 @@ li{cursor: pointer;}
 .enterWork{
   width: 100%;
   padding: 10px;
+  margin-top: 10px;
   border-radius: 5px;
   color: #fff;
   background: $C1075aa;

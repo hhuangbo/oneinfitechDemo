@@ -1,10 +1,10 @@
 <template>
-    <div class="login">
+    <div class="search">
         <div class="serContent">            
             <h3 class="">ONEINFITECH</h3>
             <div class="searchCont">
-                <input class="searchInp" type="text" placeholder="请输入关键字查询"/>
-                <button class="btnsearch" @click="searchEvent" @keyup.enter="searchEvent">搜索</button>
+                <input class="searchInp" type="text" placeholder="请输入关键字查询"  @keyup.enter="searchEvent"/>
+                <button class="btnsearch" @click="searchEvent">搜索</button>
             </div>
             <ul class="hotSearch">
                 <label>热门搜索：</label>
@@ -24,9 +24,9 @@ export default {
     },
     methods:{
         searchEvent(){
+            console.log('回车')
             //查询成功跳转到map页面
             this.$router.push({path:'/oneMap'});
-    
         }
     }
 }
@@ -34,10 +34,10 @@ export default {
 
 <style lang="scss" scoped>
 $C0a2c9a:#0a2c9a;
-.login{
+.search{
     width: 100%;
     height: 100%;
-    background: url(../../assets/loginbg.jpg) no-repeat;
+    background: url(../../assets/searchbg.jpg) no-repeat;
     background-size: cover;
     position: absolute;
     top: 0;
@@ -69,7 +69,7 @@ $C0a2c9a:#0a2c9a;
     border-radius: 5px;
 }
 .btnsearch{
-    width: 10%;
+    width: 15%;
     background-color: $C0a2c9a;
     color: #fff;
     padding: 10px;

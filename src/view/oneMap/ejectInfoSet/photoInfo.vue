@@ -1,5 +1,5 @@
 <template>
-<div class="photoInfo">
+<div class="photoInfo" v-show="infoIsShow">
     <ul class="infoCont">
         <li v-for="item in phoInfoData">
             <img :src="item.img"/>
@@ -11,6 +11,7 @@
         <i class="iconfont icon-narrow" @click="handleNarrow"></i>
         <i class="iconfont icon-refresh" @click="handleRefresh"></i>
     </div>
+    <i class="btnclose iconfont icon-close" @click="handleClose"><!--关闭弹出--></i>
 </div>
 </template>
 
@@ -22,6 +23,7 @@ export default {
     ],
     data(){
         return{
+            infoIsShow:true,//是否显示
             phoInfoData:[
                 {title:'整体园区',img:require('../../../assets/c1.jpg')},
                 {title:'仓库外观',img:require('../../../assets/c2.jpg')},
@@ -60,6 +62,9 @@ export default {
         handleRefresh(){//刷新
             console.log('刷新');
 
+        },
+        handleClose(){//关闭
+            this.infoIsShow=false;
         }
     }
 }
@@ -67,22 +72,30 @@ export default {
 
 <style lang="scss" scoped>
 .photoInfo{
-    width: 100%;
+    //width: 100%;
+    width: 70%;
     position: absolute;
     top: 30%;
-    left: 0;
+    // left: 0;
+    left: 20%;
     z-index: 8;
     background: rgba(16, 117, 170, 0.77);
     color: #fff;
     .infoCont{
         display: flex;
-        padding: 2% 10% 0;
-        li{text-align: center;margin: 0 10px;}
-        img{display: block;width: 75%;margin: 0 auto;}
+        padding: 2% 2% 0;
+        // padding: 2% 10% 0;
+        li{
+            text-align: center;//margin: 0 10px;
+        }
+        img{display: block;
+        // width: 75%;
+        width: 85%;
+        margin: 0 auto;
+        }
         span{line-height: 30px;}
     }
 }
-
 .viewTool{    
     text-align: center;
     padding: 10px 0;
@@ -92,5 +105,14 @@ export default {
         line-height: 30px;
         cursor: pointer;
     }
+}
+.btnclose{
+    position: absolute;
+    // top: 10px;
+    // right: 10px;
+    top: 0px;
+    right: 2px;
+    font-size: 20px;
+    cursor: pointer;
 }
 </style>

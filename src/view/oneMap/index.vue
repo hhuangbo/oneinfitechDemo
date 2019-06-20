@@ -62,11 +62,9 @@ export default {
         menuActive(data){
             if(data !=1){
                 this.map.clearMap()//清除全部覆盖物
-                this.travelCar.destroy()//销毁巡航器
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
             }else if(data==1){
                 this.map.setZoom(5)
-                this.travelCar.destroy()//销毁巡航器
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
                  this.map.remove([this.TruckDMarker.startMarker,this.TruckDMarker.endMarker,this.TruckDMarker.endMarker2,this.TruckDMarker.routeLine])
             }
@@ -87,7 +85,6 @@ export default {
          //添加监听时间，当前缩放级别
         AMap.event.addListener(that.map,'zoomend',function(){
             that._onZoomEnd()
-            // that.initEvent()
         });
         // console.log('好的哈大当家',this.$store.state.serviceData)
         // if(this.wareDataInfo.type==1 || this.wareDataInfo.type==3){
@@ -118,21 +115,6 @@ export default {
         Level3Data(data){//左侧菜单点击取值 子组件2级
             if(data){this.cityInit(data)}
             
-        },
-        initEvent(){
-            let _this=this;
-            let time=null,zoom=_this.map.getZoom();
-            if(time)clearTimeout(time);
-            time=setTimeout(function(){
-                if(zoom<7){
-                    var markersDatas=JSON.parse(localStorage.getItem('markersDatas'));
-                    // _this.map.remove(this.markersTwo)//移除不再层级的点聚合
-                    _this.province(JSON.parse(localStorage.getItem('markersDatas')))
-                }else if(zoom<9 || zoom>7 ){
-                    // _this.map.remove(this.markers)
-                    _this.cityInit(JSON.parse(localStorage.getItem('markersTwoDatas')))
-                }
-            })
         },
         province(data){////省
             var _this=this;
@@ -177,7 +159,6 @@ export default {
             
              _this.map.remove(this.markers)
              _this.map.remove(this.markersTwo)//清除点聚合
-            console.log(data)
             _this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//地图层级及中心位置
             if(data){
                 for (var i = 0; i < data.length; i ++) {
@@ -236,16 +217,23 @@ export default {
                 });
             })
         },
-        simplifierInit(){//交付轨迹
+        simplifierInit(data){//交付轨迹
             var _this=this;
-            AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
-                if (!PathSimplifier.supportCanvas) {
-                    alert('当前环境不支持 Canvas！');
-                    return;
-                }
-                //启动页面
-                _this.set_initPage(PathSimplifier);
-            });
+            if(data.type==1){
+                AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
+                    if (!PathSimplifier.supportCanvas) {
+                        alert('当前环境不支持 Canvas！');
+                        return;
+                    }
+                    //启动页面
+                    _this.set_initPage(PathSimplifier);
+                });
+            }else{
+                
+                _this.travelCar.destroy()//销毁巡航器
+                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
+                 _this.map.remove([_this.TruckDMarker.startMarker,_this.TruckDMarker.endMarker,_this.TruckDMarker.endMarker2,_this.TruckDMarker.routeLine])
+            }
         },
         set_initPage(PathSimplifier) {
             var _this=this;
@@ -277,103 +265,102 @@ export default {
             });
             window.pathSimplifierIns=pathSimplifierIns
             //轨迹
-            pathSimplifierIns.setData([{
-                name: '轨迹1',
-                path: [
-                    [121.805065,31.145348],
-                    [121.776569,31.185742],
-                    [121.739491,31.183392],
-                    [121.700352,31.168117],
-                    [121.634434,31.156954],
-                    [121.597355,31.164004],
-                    [121.556843,31.205712],
-                    [121.525257,31.229201],
-                    [121.484058,31.236246]
-                ]
-            }, {
-                name: '轨迹2',
-                path: [
-                    [121.805065,31.145348], 
-                    [121.816395,31.102879],
-                    [121.753224,31.095824],
-                    [121.677693,31.102291],
-                    [121.594608,31.122867],
-                    [121.560276,31.122279]
-                    ]
-            }]);
-            console.log('轨迹',pathSimplifierIns)
+            _this.$http.get('../../static/json/routes.json').then(res =>{
+                var routeData=res.data;
+                var travelRoutes=[];
+                // for (var i = 0, len=routeData.length; i < len; i++) {
+                //     console.log(routeData.splice(i))
+                //     routeData.splice(i,0,{
+                //         path: PathSimplifier.getGeodesicPath(
+                //             routeData[i].path[0],path[routeData[i].path.length -1 ],100)
+                //     })
+                //     i++;
+                //     len++;
+                // }
+                // routeData.push.apply(routeData,travelRoutes);
+                pathSimplifierIns.setData(routeData);
+                _this.routeTruckMarker(res.data)
+
+                _this.travelCar = pathSimplifierIns.createPathNavigator(0, {
+                    // loop: true,
+                    speed: 500,
+                    pathNavigatorStyle: {
+                        width: 25,
+                        height: 40,
+                        autoRotate:true,
+                        content: PathSimplifier.Render.Canvas.getImageContent(require('../../assets/car.png'), onload, onerror),
+                        strokeStyle: null,
+                        fillStyle: null,
+                        //经过路径的样式
+                        pathLinePassedStyle: {
+                            lineWidth: 6,
+                            strokeStyle: '#0f9532',
+                            dirArrowStyle: {
+                                stepSpace: 15,
+                                strokeStyle: '#fff'
+                            }
+                        }
+                    }
+                });
+                _this.travelCar.start();
+            
+            }).catch(err =>{
+                console.log(err)
+            })
+            
+                // _this.travelCar.destroy()//销毁巡航器
+        },
+        routeTruckMarker(routePath){
+            var _this=this;
             // var Iconpath = _this.parseRouteToPath(route);
             var iconSize=new AMap.Size(40, 40);
             _this.TruckDMarker.startMarker = new AMap.Marker({//起点
-                position: [121.802319,31.139471],
+                position: routePath[0].path[0],
                 size: iconSize,
                 icon: require('../../assets/difineDir1.png'),
-                offset: new AMap.Pixel(-13, -30),
+                offset: new AMap.Pixel(-10, -20),
                 map: _this.map
             })
              _this.TruckDMarker.startMarker.setLabel({
                 offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
                 content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'right', //设置文本标注方位
+                direction: 'left', //设置文本标注方位
             }); 
             _this.TruckDMarker.endMarker = new AMap.Marker({//终点
-                position: [121.484058,31.236246],
+                position: routePath[0].path[routePath[0].path.length-1],
                 size: iconSize,
-                icon: require('../../assets/difineDir2.png'),//'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
-                imageSize: new AMap.Size(40, 40),
-                imageOffset: new AMap.Pixel(-95, -3),
+                icon: require('../../assets/difineDir2.png'),
+                offset: new AMap.Pixel(-20, -10),
                 map: _this.map
             })
             _this.TruckDMarker.endMarker.setLabel({
                 offset: new AMap.Pixel(0, 10),  //设置文本标注偏移量
                 content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'left', //设置文本标注方位
+                direction: 'bottom', //设置文本标注方位
             });
             _this.TruckDMarker.endMarker2 = new AMap.Marker({//终点
-                position: [121.560276,31.122279],
+                position: routePath[2].path[routePath[2].path.length-1],
                 size: iconSize,
-                icon: require('../../assets/difineDir2.png'),//'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
-                imageSize: new AMap.Size(40, 40),
-                imageOffset: new AMap.Pixel(-95, -3),
+                icon: require('../../assets/difineDir2.png'),
+                offset: new AMap.Pixel(-10, -10),
                 map: _this.map
             })
             _this.TruckDMarker.endMarker2.setLabel({
                 offset: new AMap.Pixel(5, 1),  //设置文本标注偏移量
                 content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'bottom', //设置文本标注方位
+                direction: 'top', //设置文本标注方位
+                // border:none
             });
-            _this.travelCar = pathSimplifierIns.createPathNavigator(0, {
-                loop: true,
-                speed: 5000,
-                pathNavigatorStyle: {
-                    width: 50,
-                    height: 40,
-                    autoRotate:true,
-                    content: PathSimplifier.Render.Canvas.getImageContent(require('../../assets/car.png'), onload, onerror),
-                    strokeStyle: null,
-                    fillStyle: null,
-                    //经过路径的样式
-                    pathLinePassedStyle: {
-                        lineWidth: 6,
-                        strokeStyle: '#0f9532',
-                        dirArrowStyle: {
-                            stepSpace: 15,
-                            strokeStyle: '#fff'
-                        }
-                    }
-                }
-            });
-            _this.travelCar.start();
         },
         drawRoute(route){//点标记
             var _this=this;
             var path = _this.parseRouteToPath(route);
             var difineICON=require('../../assets/difineDir1.png');
-            var iconSize=new AMap.Size(40, 40);
+            var iconSize=new AMap.Size(30, 30);
             _this.TruckDMarker.startMarker = new AMap.Marker({//起点
                 position: path[0],
                 size: iconSize,
-                icon: require('../../assets/difineDir1.png'),//'http://a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png',
+                icon: require('../../assets/difineDir1.png'),
                 offset: new AMap.Pixel(-13, -30),
                 map: _this.map
             })
@@ -386,9 +373,8 @@ export default {
             _this.TruckDMarker.endMarker = new AMap.Marker({//终点
                 position: path[path.length - 1],
                 size: iconSize,
-                icon: require('../../assets/difineDir2.png'),//'https://webapi.amap.com/theme/v1.3/markers/n/end.png',
-                imageSize: new AMap.Size(40, 40),
-                imageOffset: new AMap.Pixel(-95, -3),
+                icon: require('../../assets/difineDir2.png'),
+                offset: new AMap.Pixel(60, 20),
                 map: _this.map
             })
             _this.TruckDMarker.endMarker.setLabel({
@@ -503,6 +489,7 @@ export default {
     opacity: .9;
     padding: 10px;
     border-radius: 3px;
+    border:none;
 }
 
 

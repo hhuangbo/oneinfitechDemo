@@ -68,6 +68,7 @@ export default {
             this.active2 = -1;
             this.$store.commit('set_wareDataInfo',{});
             this.$store.commit('set_menuActive',this.active1);
+            console.log('哈哈哈',this.active1)
             if(item.type=='2'){//收获地址
                 if( this.active1==1 && item.level){
                     this.$parent.secondLevelData(item,this.active1)
@@ -83,9 +84,7 @@ export default {
             }
         },
         enterWork(){//进入工作台 跳转
-            this.$alert('进入壹站工作台...', '提示', {
-                confirmButtonText: '确定'
-            });
+            alert('进入壹站工作台...')
         }
     }
 };
@@ -103,29 +102,37 @@ export default {
     z-index: 9;
     .ul1{
         max-height: 70%;
-        overflow: auto;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-        background-color: #fff;
+        overflow-y: auto;
     }
-    .iconfont{font-size: 12px;}
 }
 
 li{cursor: pointer;}
 .li1{
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     line-height: 28px;
     .menu-name{
-        background: #fff;
-        color: #565656;
+        background: #bfbfbf;
+        color: #fff;
         display: block;
-        font-size: 12px;
         padding: 0 10px;
         display: flex;
         justify-content: space-between;
     }
+    .aaa::before{
+        position: absolute;
+        right: 12px;
+        color: #fff;
+    }
 }
+.ul2{
+    // max-height: 200px;
+    // overflow-y: auto;
+}
+// .collapse-transition{transition:height .3s ease-in-out,padding-top .3s ease-in-out,padding-bottom .3s ease-in-out}
+// .collapse-transitions{transition:height .3s ease-in}
+
 .isOpened{
-    .menu-name{background-color: $C031f4a;color: #fff;}
+    .menu-name{background-color: $C031f4a;}
     .menuItem{display: flex;}
     .li2 span{
         background-color: $C031f4a;
@@ -133,8 +140,7 @@ li{cursor: pointer;}
         color: #fff;
         padding: 0 12px;
         display: block;
-        flex:1;
-        font-size: 12px;
+        flex:1
     }
 }
 .isOpened2{
@@ -148,13 +154,11 @@ li{cursor: pointer;}
 }
 .enterWork{
   width: 100%;
-  padding: 5px 10px;
+  padding: 10px;
   margin-top: 10px;
-  border-radius: 3px;
+  border-radius: 5px;
   color: #fff;
-  font-size: 12px;
-  background: $C354c6e;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  background: $C1075aa;
   cursor: pointer;
 }
 </style>

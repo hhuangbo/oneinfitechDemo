@@ -93,7 +93,7 @@ export default {
         width: 85%;
         margin: 0 auto;
         }
-        span{line-height: 30px;}
+        span{line-height: 30px;font-size: 12px;}
     }
 }
 .viewTool{    
@@ -108,10 +108,8 @@ export default {
 }
 .btnclose{
     position: absolute;
-    // top: 10px;
-    // right: 10px;
     top: 0px;
-    right: 2px;
+    right: 4px;
     font-size: 20px;
     cursor: pointer;
 }

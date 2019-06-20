@@ -23,15 +23,12 @@ export default {
     methods:{
         handleSelected(item,index,mType){
             this.ischecked=index
-            console.log('mType',mType)
             switch(mType){
                 case '1'://仓库地址
                     this.$store.commit('set_wareDataInfo',item)
                     break;
                 case '3'://服务订单
-                    // this.$store.commit('set_serviceData',item)
-                    this.$parent.set_serviceCompValue(item)
-                    // this.$emit('serviceD',item)
+                        this.$parent.set_serviceCompValue(item)
                     break;
             }
         }

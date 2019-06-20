@@ -4,23 +4,24 @@
             <div class="wareHead">
                 <label>{{parkLayOut.title}}</label>
                 <div class="toolRight">
-                    <i class="iconfont icon-e60b"></i>  
+                    <i :class="[ LayOut_isOpen == true ? 'iconfont icon-e60b' : 'iconfont icon-eb38']" @click="hLayOut_IsOpen()"></i>  
                     <i class="iconfont icon-close" @click="handleCurrClose(1)"></i>  
                 </div>
             </div>
-            <div class="cont">
-                <ul>
+            <div class="cont" >
+                <ul v-if="LayOut_isOpen" >
                     <li v-for="item in parkLayOut.areaInfo">
                         <span>{{item.name}}：</span><span>{{item.area}}</span>
                     </li>
                 </ul>
+                <i v-else class="iconIsclose iconfont icon-eb38" @click="btnOpenInfo()"></i>
             </div>
         </div>
         <div class=" park parkSet" v-show="parkSetShow">
             <div class="wareHead">
                 <label>{{parkSet.title}}</label>
                 <div class="toolRight">
-                    <i class="iconfont icon-e60b"></i>  
+                    <i class="iconfont icon-e60b" ></i>  
                     <i class="iconfont icon-close" @click="handleCurrClose(2)"></i>  
                 </div>
             </div>
@@ -43,6 +44,7 @@ export default {
             ischecked:0,
             parkSetShow:true,
             parkLayOutShow:true,
+            LayOut_isOpen:true,
             parkLayOut:{
                 title:'园区布局',
                 info:[
@@ -74,6 +76,12 @@ export default {
         },
         handleCurrClose(data){//关闭当前窗口
             data == 1 ? this.parkLayOutShow = false : this.parkSetShow = false
+        },
+        hLayOut_IsOpen(){//展开/折叠
+            this.LayOut_isOpen = this.LayOut_isOpen == true ? false:true
+        },
+        btnOpenInfo(){//展开当前信息窗
+            this.LayOut_isOpen=true;
         },
         handleMoreSet(){//更多配置
 
@@ -138,6 +146,7 @@ export default {
         .des{font-size: 12px;}
     }
 }
+.iconIsclose{text-align: center;display: block;cursor: pointer;}
 .moreSet{
     height: 20px !important;
     line-height: 20px !important;

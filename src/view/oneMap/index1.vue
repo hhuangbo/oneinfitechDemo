@@ -83,7 +83,7 @@ export default {
         },
         serviceData(res){
             if(res.type==1){
-                this.serviceInit()
+                this.simplifierInit()
             }
         }
     },
@@ -208,7 +208,7 @@ export default {
         areaInit(){//区
             this.map.setZoomAndCenter(12);//设置地图层级
         },
-        serviceInit(data){//交付轨迹
+        simplifierInit(data){//交付轨迹
             var _this=this;
             _this.map.remove(_this.markers)
                //调用 Driving

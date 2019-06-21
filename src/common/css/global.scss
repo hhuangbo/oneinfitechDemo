@@ -88,9 +88,9 @@ h2,h3,h4{font-weight: 100;}
     border: 1px solid $C0d0e0f;
     background-color: #fff;
     border-radius: 5px;
-    padding: 4px 10px;
+    height: 30px;
+    line-height: 30px;
     display: inline-block;
-    line-height: 15px;
     font-size: 12px;
     text-align: center;
     flex:1;
@@ -100,8 +100,8 @@ h2,h3,h4{font-weight: 100;}
     position: relative;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     border-radius: 5px;
     margin-left: 5px;
     border: 1px solid $C0d0e0f;
@@ -121,8 +121,8 @@ h2,h3,h4{font-weight: 100;}
     border-top: 0;
     height: 12px;
     width: 5px;
-    left:9px;
-    top: 2px;
+    left:11px;
+    top: 5px;
     -webkit-transform: rotate(45deg) scaleY(0);
     transform: rotate(45deg) scaleY(0);
     -webkit-transform: rotate(45deg) scaleY(1);

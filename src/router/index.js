@@ -5,7 +5,7 @@ const search = resolve => require.ensure([],() => resolve(require('../view/searc
 const oneMap = resolve => require.ensure([],() => resolve(require('../view/oneMap/index')),'oneMap') 
 
 const oneMap1 = resolve => require.ensure([],() => resolve(require('../view/oneMap/index1')),'index1') 
-// const demo2 = resolve => require.ensure([],() => resolve(require('../view/oneMap/demo2')),'demo2') 
+const demo = resolve => require.ensure([],() => resolve(require('../view/oneMap/demo')),'demo') 
 
 Vue.use(Router)
 
@@ -30,11 +30,10 @@ export default new Router({
       path: '/oneMap1',
       name: 'oneMap1',
       component: oneMap1
+    },{
+      path: '/demo',
+      name: 'demo',
+      component: demo
     }
-    // ,{
-    //   path: '/demo2',
-    //   name: 'demo2',
-    //   component: demo2
-    // }
   ]
 })

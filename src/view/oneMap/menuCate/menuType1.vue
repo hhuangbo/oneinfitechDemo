@@ -23,8 +23,8 @@ export default {
     methods:{
         handleSelected(item,index,mType){
             this.ischecked=index
-            switch(mType){
-                case '1'://仓库地址
+            switch(mType.type){
+                case '1'://仓库信息
                     this.$store.commit('set_wareDataInfo',item)
                     break;
                 case '3'://服务订单
@@ -37,7 +37,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-li{   
+li{   height: 34px;line-height: 34px;
     border-radius: 5px;
     margin: 5px 10px;
     display: flex;

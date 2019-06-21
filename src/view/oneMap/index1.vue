@@ -13,7 +13,7 @@
 <script>
 import qs from 'QS'
 
-import menuCate from './menuCate/menuCate'
+import menuCate from './menuCate/index'
 import photoInfo from './ejectInfoSet/photoInfo'
 import warehInfo from './ejectInfoSet/warehInfo'
 import {mapGetters} from 'vuex'
@@ -52,10 +52,7 @@ export default {
     },
     computed:{
         ...mapGetters([
-            'menuActive',
-            'menuInfo',
-            'wareDataInfo',//仓库地址
-            'serviceData'//服务订单
+            'menuActive'
         ])
     },
     watch:{
@@ -71,10 +68,6 @@ export default {
                  
                 //  this.map.remove(this.startMarker)
             }//移除不再层级的点聚合
-        },
-        menuInfo(data){
-            console.log(data);
-            
         },
         wareDataInfo(){
             
@@ -93,7 +86,6 @@ export default {
          //添加监听时间，当前缩放级别
         AMap.event.addListener(that.map,'zoomend',function(){
             that._onZoomEnd()
-            // that.initEvent()
         });
         // console.log('好的哈大当家',this.$store.state.serviceData)
         // if(this.wareDataInfo.type==1 || this.wareDataInfo.type==3){
@@ -125,21 +117,6 @@ export default {
         Level3Data(data){//左侧菜单点击取值 子组件2级
             if(data){this.cityInit(data)}
             
-        },
-        initEvent(){
-            let _this=this;
-            let time=null,zoom=_this.map.getZoom();
-            if(time)clearTimeout(time);
-            time=setTimeout(function(){
-                if(zoom<7){
-                    var markersDatas=JSON.parse(localStorage.getItem('markersDatas'));
-                    // _this.map.remove(this.markersTwo)//移除不再层级的点聚合
-                    _this.province(JSON.parse(localStorage.getItem('markersDatas')))
-                }else if(zoom<9 || zoom>7 ){
-                    // _this.map.remove(this.markers)
-                    _this.cityInit(JSON.parse(localStorage.getItem('markersTwoDatas')))
-                }
-            })
         },
         province(data){////省
             var _this=this;
@@ -375,7 +352,7 @@ export default {
 </style>
 <style>
 .amap-marker-label{
-    background-color: #031f4a;
+    background-color: #0d0e0f;
     color: #fff;
     opacity: .9;
     padding: 10px;

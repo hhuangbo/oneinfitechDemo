@@ -15,7 +15,7 @@ export default {
     },
     methods:{
         level3Data(data){
-            this.$store.commit('set_menuInfo',data)
+            
         }
     }
 }
@@ -23,14 +23,14 @@ export default {
 
 <style lang="scss" scoped>
 .tempMenu2{
-    background-color:$C031f4a; 
+    background-color:$C0d0e0f; 
     opacity: .8;
 }
 li{    
     color: #fff;
     text-align: center;
     font-size: 14px;
-    line-height: 24px;
+    height: 34px;line-height: 34px;
     cursor: pointer;
 }
 </style>

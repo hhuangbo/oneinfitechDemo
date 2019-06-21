@@ -3,12 +3,12 @@
         <div class="serContent">            
             <h3 class="">ONEINFITECH</h3>
             <div class="searchCont">
-                <input class="searchInp" type="text" placeholder="请输入关键字查询"  @keyup.enter="searchEvent"/>
+                <input class="searchInp" type="text" :value="searchVal" placeholder="请输入关键字查询"  @keyup.enter="searchEvent"/>
                 <button class="btnsearch" @click="searchEvent">搜索</button>
             </div>
             <ul class="hotSearch">
                 <label>热门搜索：</label>
-                <li v-for="item in hotData">{{item}}</li>
+                <li v-for="item in hotData" @click="handlehotSearch(item)">{{item}}</li>
             </ul>
         </div>
         
@@ -19,13 +19,17 @@
 export default {
     data(){
         return{
+            searchVal:'',
             hotData:['麦德龙','保时捷','索尼','赛默飞']
         }
     },
     methods:{
         searchEvent(){
-            console.log('回车')
             //查询成功跳转到map页面
+            this.$router.push({path:'/oneMap'});
+        },
+        handlehotSearch(item){
+            // this.searchVal=item
             this.$router.push({path:'/oneMap'});
         }
     }
@@ -33,7 +37,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$C0a2c9a:#0a2c9a;
 .search{
     width: 100%;
     height: 100%;

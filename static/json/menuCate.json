@@ -1,25 +1,12 @@
 {
     "menuList":[
-        {   "type":"1",
-            "title":"仓库地址",
-            "level":[{
-                "title":"北京",
-                "info":[
-                    {"type":"1","title":"仓库照片"},
-                    {"type":"2","title":"基本信息"},
-                    {"type":"3","title":"实时监控"}
-                ]
-            },{
-                "title":"天津",
-                "info":[
-                    {"type":"1","title":"仓库照片"},
-                    {"type":"2","title":"基本信息"},
-                    {"type":"3","title":"实时监控"}
-                ]
-            }]
+        {"title":"项目检索",
+            "level":[
+                {"type":"1","title":"麦德龙"}
+            ]
         },
         {   "type":"2",
-            "title":"收获地址",
+            "title":"收货地址",
             "level":[
                 {
                     "id": "1",
@@ -90,26 +77,141 @@
                 }
             ]
         },
+        {   
+            "type":"1",
+            "title":"仓库信息",
+            "level":[{
+                "title":"北京",
+                "info":[
+                    {"type":"1","title":"仓库照片"},
+                    {"type":"2","title":"基本信息"},
+                    {"type":"3","title":"实时监控"}
+                ]
+            },{
+                "title":"天津",
+                "info":[
+                    {"type":"1","title":"仓库照片"},
+                    {"type":"2","title":"基本信息"},
+                    {"type":"3","title":"实时监控"}
+                ]
+            }]
+        },
+        { "type":"2",
+            "title":"站点信息",
+            "level":[
+                {
+                    "id": "1",
+                    "title": "北京",
+                    "info":[
+                        {
+                            "title":"海淀区"
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "type":"3",
             "title":"服务订单",
             "level":[
-                {"type":"1","title":"交付轨迹"},
-                {"type":"2","title":"订单信息"},
-                {"type":"3","title":"EPCD"},
-                {"type":"3","title":"客户评价"}
+                {
+                    "title": "O20171104001",
+                    "info":[
+                        {"type":"1","title":"交付轨迹"},
+                        {"type":"2","title":"订单信息"},
+                        {"type":"3","title":"EPCD"},
+                        {"type":"3","title":"客户评价"}
+                    ]
+                },
+                {
+                    "title":"O20171104002",
+                    "info":[
+                        {"type":"1","title":"交付轨迹"},
+                        {"type":"2","title":"订单信息"},
+                        {"type":"3","title":"EPCD"},
+                        {"type":"3","title":"客户评价"}
+                    ]
+                }
             ]
         },
-        {"title":"项目检索"},
-        {"title":"客户检索"},
-        {"title":"订单列表"},
-        {"title":"收货人"},
-        {"title":"发货人"},
-        {"title":"司机列表"},
-        {"title":"车辆检索"},
-        {"title":"仓库信息"},
-        {"title":"干线路线"},
-        {"title":"供应商"},
-        {"title":"站点信息"}
+        {
+            "title":"客户检索",
+            "level":[
+                {"title": "麦德龙股份有限公司"}
+            ]
+        },
+        {"title":"收货人",
+            "level":[
+                {
+                    "title": "朱志坤"
+                },
+                {
+                    "title": "周仕明"
+                }
+            ]
+        },
+        {"title":"发货人",
+            "level":[
+                {
+                    "title": "陈记"
+                },
+                {
+                    "title": "穆芳芳"
+                },
+                {
+                    "title": "胡成娟"
+                },
+                {
+                    "title": "王屹"
+                }
+            ]
+        },
+        {"title":"司机列表",
+            "level":[
+                {
+                    "title": "温小冬"
+                },
+                {
+                    "title": "方静波"
+                }
+            ]
+        },
+        {"title":"车辆检索",
+            "level":[
+                {
+                    "title": "沪BS1368"
+                },
+                {
+                    "title": "沪AP275挂"
+                }
+            ]
+        },
+        {"title":"供应商",
+            "level":[
+                {
+                    "title": "壹站（上海）供应链管理有限公司"
+                }
+            ]
+        },
+        {   "type":"3",
+            "title":"干线路线",
+            "level":[
+                {
+                    "title": "上海-北京"
+                },
+                {
+                    "title": "上海-南京"
+                },
+                {
+                    "title":"上海-广州"
+                },
+                {
+                    "title": "上海-南昌"
+                },
+                {
+                    "title":"上海-福州"
+                }
+            ]
+        }
     ]
 }

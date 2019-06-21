@@ -13,7 +13,7 @@
 <script>
 import qs from 'QS'
 
-import menuCate from './menuCate/menuCate'
+import menuCate from './menuCate/index'
 import photoInfo from './ejectInfoSet/photoInfo'
 import warehInfo from './ejectInfoSet/warehInfo'
 import {mapGetters} from 'vuex'
@@ -54,7 +54,6 @@ export default {
     computed:{
         ...mapGetters([
             'menuActive',
-            'menuInfo',
             'wareDataInfo',//仓库地址
         ])
     },
@@ -68,16 +67,7 @@ export default {
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
                  this.map.remove([this.TruckDMarker.startMarker,this.TruckDMarker.endMarker,this.TruckDMarker.endMarker2,this.TruckDMarker.routeLine])
             }
-        },
-        menuInfo(data){
-            console.log(data);
-            
-        },
-        wareDataInfo(){
-            
-            // this.map.remove(this.markers)//清除省份聚合点
-            // this.map.remove(this.markersTwo)
-        },
+        }
     },
     mounted(){
         var that=this;
@@ -86,13 +76,6 @@ export default {
         AMap.event.addListener(that.map,'zoomend',function(){
             that._onZoomEnd()
         });
-        // console.log('好的哈大当家',this.$store.state.serviceData)
-        // if(this.wareDataInfo.type==1 || this.wareDataInfo.type==3){
-        //     console.log('改清除了')
-        //     this.map.clearMap()//清除覆盖物
-        //      this.map.remove(this.markers)//移除不再层级的点聚合
-        //     //   this.map.remove(this.markersTwo)//移除不再层级的点聚合
-        // }
         // this.addCluster()
     },
     methods:{
@@ -104,7 +87,7 @@ export default {
                 center: _this.mapData.center,
                 resizeEnable: _this.mapData.resizeEnable,//自适应大小
                 viewMode: '2D'
-            })                
+            })        
         },
         secondLevelData(data,act){//左侧菜单点击取值 子组件1
             if(data){
@@ -181,6 +164,49 @@ export default {
         },
         areaInit(){//区
             this.map.setZoomAndCenter(12);//设置地图层级
+        },
+        trunkLineInit(data){//干线路线
+            var _this=this;
+            if(data.title.indexOf('北京') !=-1){_this.map.clearMap();
+                var lineArr = [
+                    [121.424029,31.189007],
+                    [118.78731,32.235739],
+                    [117.117388,34.111513],
+                    [113.425982,34.72778],
+                    [116.415312,39.852138]
+                ];
+                    // 绘制轨迹
+                var polyline = new AMap.Polyline({
+                    map: _this.map,
+                    path: lineArr,
+                    showDir:true,
+                    strokeColor: "#28F",  //线颜色
+                    // strokeOpacity: 1,     //线透明度
+                    strokeWeight: 6,      //线宽
+                    // strokeStyle: "solid"  //线样式
+                });
+            }else if(data.title.indexOf('南京') !=-1){                
+                _this.map.clearMap();
+                var lineArr = [
+                    [121.424029,31.189007],
+                    [120.918658,31.353336],
+                    [120.638507,31.470539],
+                    [120.347369,31.568876],
+                    [119.946368,31.760568],
+                    [119.473956,32.175315],
+                    [118.831256,32.012436]
+                ];
+                    // 绘制轨迹
+                var polyline = new AMap.Polyline({
+                    map: _this.map,
+                    path: lineArr,
+                    showDir:true,
+                    strokeColor: "#28F",  //线颜色
+                    // strokeOpacity: 1,     //线透明度
+                    strokeWeight: 6,      //线宽
+                    // strokeStyle: "solid"  //线样式
+                });
+            }
         },
         serviceInit(data){//交付轨迹
             var _this=this;
@@ -283,10 +309,10 @@ export default {
 
                 _this.travelCar = pathSimplifierIns.createPathNavigator(0, {
                     // loop: true,
-                    speed: 500,
+                    speed: 2000,
                     pathNavigatorStyle: {
                         width: 25,
-                        height: 40,
+                        height: 35,
                         autoRotate:true,
                         content: PathSimplifier.Render.Canvas.getImageContent(require('../../assets/car.png'), onload, onerror),
                         strokeStyle: null,
@@ -484,7 +510,7 @@ export default {
 </style>
 <style>
 .amap-marker-label{
-    background-color: #031f4a;
+    background-color: #0d0e0f;
     color: #fff;
     opacity: .9;
     padding: 10px;

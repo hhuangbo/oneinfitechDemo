@@ -104,7 +104,7 @@ export default {
     text-align: center;
     font-size: 14px;
     label,.toolRight i{
-        background-color: $C031f4a;
+        background-color: $C0d0e0f;
         border-radius: 3px;
     }
     label{
@@ -117,7 +117,7 @@ export default {
 }
 .parkLayOut{
     .cont{
-        background-color: $C031f4a;
+        background-color: $C0d0e0f;
         font-size: 12px;
         margin: 5px 0;
         padding: 5px;
@@ -134,7 +134,7 @@ export default {
     
     ul{width: 70%;}
     li{
-        background-color: $C031f4a;
+        background-color: $C0d0e0f;
         border-radius: 3px;
         margin: 5px 0;
         color: #fff;

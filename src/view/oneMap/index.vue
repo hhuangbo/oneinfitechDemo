@@ -61,6 +61,7 @@ export default {
     },
     watch:{
         menuActive(data){
+            if(data==2){return;}else{this.map.clearMap()}
             if(data !=1){
                 this.map.clearMap()//清除全部覆盖物
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
@@ -97,18 +98,17 @@ export default {
             }
         },
         Level2Data(data){//左侧菜单点击取值 子组件2级
-            console.log('哈哈哈哈',data.info[0].lng,data.info[0].lat)
+            this.map.setZoomAndCenter(10,[data.info[0].lng,data.info[0].lat]);//地图层级及中心位置
             if(data){this.cityInit(data)}
         },
         level3Data(data){
-            // console.log('永远永远',data.addressInfo)
-            // 
-            if(data.addressInfo){this.areaInit(data)}
+            this.map.setZoomAndCenter(13,[data.addressInfo[0].lng,data.addressInfo[0].lat]);//设置地图层级
+            if(data.addressInfo){this.areaInit(data.addressInfo)}
         },
         province(data){////省
-        console.log('哈哈哈哈哈yy',data)
             var _this=this;
              _this.map.remove(this.markersTwo)//清除点聚合 
+                this.map.setZoomAndCenter(5,[106.259411,37.072703]);
             // _this.map.clearOverlays()
             if(data){console.log('进来没')
                 for (var i = 0; i < data.length; i ++) {                    
@@ -120,10 +120,13 @@ export default {
                         offset: new AMap.Pixel(-15, -15)//点标记显示位置偏移量
                     })
                     localStorage.setItem('markersDatas',JSON.stringify(data)) 
-                    this.markers.push(marker);debugger;
+                    this.markers.push(marker);
                     _this.map.add(marker)//点标记添加到地图上
-                    var proData=data[i]
-                    AMap.event.addListener(marker,'click', ()=>{
+                    console.log('哈44444444444哈哈',data[i])
+                    
+                    AMap.event.addListener(marker,'click', (e)=>{
+                        var proData=JSON.parse(JSON.stringify(e.target.getExtData()))
+                        console.log('8888',proData)
                         this.cityInit(proData);
                     });
                 } 
@@ -134,6 +137,7 @@ export default {
             var _this=this,data;
             if(e.target){data=JSON.parse(JSON.stringify(e.target.getExtData())).info;}
             else{data=e.info}
+            console.log('9999999',data)
             this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//地图层级及中心位置
              _this.map.remove(this.markers)
              _this.map.remove(this.markersTwo)//清除点聚合
@@ -153,17 +157,28 @@ export default {
                     
                     localStorage.setItem('markersTwoDatas',JSON.stringify(data)) 
                     this.markersTwo.push(marker);
-                    var  addData=data[i]
-                    AMap.event.addListener(marker,'click', ()=>{
-                        this.areaInit(addData.addressInfo);
+                    // var  addData=data[i]
+                    // console.log('就是',addData)
+                    AMap.event.addListener(marker,'click', (e)=>{
+                        
+                        var addData=JSON.parse(JSON.stringify(e.target.getExtData()))
+                        console.log('99999999',addData)
+                        this.areaInit(addData);
                     });
 
                 }
             }
         },
         areaInit(data){//区 difineDir2
+                    console.log('就不不不不不是',data)
             var _this=this;_this.map.remove(this.markersTwo)//清除点聚合 
-            _this.map.setZoomAndCenter(14,[data[0].lng,data[0].lat]);//设置地图层级
+            if(data.addressInfo){
+                console.log('哈哈2222222222哈哈',data)
+                _this.map.setZoomAndCenter(12,[data.lng,data.lat]);
+                data=data.addressInfo;
+            }
+            else{
+                console.log('哈哈11111111111哈哈',data);_this.map.setZoomAndCenter(12,[data[0].lng,data[0].lat]);data=data;}//设置地图层级
             var i=0;
             for (i; i < data.length; i ++) {
                 // var count=data[i].count  ?  data[i].count : 1;
@@ -172,9 +187,10 @@ export default {
                         size: new AMap.Size(20, 20),//_this.iconSize,
                         icon: require('../../assets/difineDir2_1.png'),
                         offset: new AMap.Pixel(-13, -30),
-                        map:_this.map
+                        // map:_this.map
                     }); 
-                    // this.addressMarkers.push(marker);
+                    this.addressMarkers.push(marker);
+                    _this.map.add(marker)//点标记添加到地图上
                     AMap.event.addListener(marker,'click',()=>{_this.eject_addressInfo()});
                     // AMap.event.addListener(marker,'mouseover',()=>{_this.eject_addressInfo()});
             }
@@ -472,6 +488,7 @@ export default {
             if (this.map.getZoom() < 7) {//全国下的省份
                 var markersDatas=JSON.parse(localStorage.getItem('markersDatas'));
                 this.map.remove(this.markersTwo)//移除不再层级的点聚合
+                this.map.remove(this.addressMarkers)
                 if(this.markers ){
                 // this.province(JSON.parse(localStorage.getItem('markersDatas')))
                 }
@@ -481,9 +498,11 @@ export default {
                 // }
                 // this.map.add(this.markersTwo);
                 this.map.remove(this.markers)
+                this.map.remove(this.addressMarkers)
                 // this.cityInit(JSON.parse(localStorage.getItem('markersTwoDatas')))
             }else if(this.map.getZoom() < 12 && this.map.getZoom() > 9){//市下面的区或县
                 this.map.remove(this.markers)
+                this.map.remove(this.addressMarkers)
                 // this.map.remove(this.markersTwo)
                 // for (var i = 0; i < markersThree.length; i += 1) {
                 //     map.remove(markersThree[i].subMarkers);

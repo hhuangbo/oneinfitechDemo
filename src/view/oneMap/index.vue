@@ -106,21 +106,22 @@ export default {
             if(data.addressInfo){this.areaInit(data)}
         },
         province(data){////省
+        console.log('哈哈哈哈哈yy',data)
             var _this=this;
              _this.map.remove(this.markersTwo)//清除点聚合 
             // _this.map.clearOverlays()
-            if(data){
+            if(data){console.log('进来没')
                 for (var i = 0; i < data.length; i ++) {                    
                     var marker=new AMap.Marker({
                         position: [data[i].lng,data[i].lat],
-                        // map: this.map,//点标记添加到地图上
+                        // map: _this.map,//点标记添加到地图上
                         extData:data[i],//自定义属性值
                         content:  `<div style="background-color: hsla(208, 80%, 48%, 0.7); height: 50px;line-height: 50px; width: 50px;text-align:center; border: 1px solid hsl(208, 80%, 48%); border-radius: 50%; box-shadow: hsl(208, 80%, 48%) 0px 0px 1px;">${data[i].count}</div> `,
                         offset: new AMap.Pixel(-15, -15)//点标记显示位置偏移量
                     })
                     localStorage.setItem('markersDatas',JSON.stringify(data)) 
-                    this.markers.push(marker)
-                    this.map.add(marker)//点标记添加到地图上
+                    this.markers.push(marker);debugger;
+                    _this.map.add(marker)//点标记添加到地图上
                     var proData=data[i]
                     AMap.event.addListener(marker,'click', ()=>{
                         this.cityInit(proData);

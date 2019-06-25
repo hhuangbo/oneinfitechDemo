@@ -4,7 +4,7 @@ import Router from 'vue-router'
 const search = resolve => require.ensure([],() => resolve(require('../view/search/index')),'search') 
 const oneMap = resolve => require.ensure([],() => resolve(require('../view/oneMap/index')),'oneMap') 
 
-const oneMap1 = resolve => require.ensure([],() => resolve(require('../view/oneMap/index1')),'index1') 
+const oneMap1 = resolve => require.ensure([],() => resolve(require('../view/oneMap/index625')),'index625') 
 const demo = resolve => require.ensure([],() => resolve(require('../view/oneMap/demo')),'demo') 
 
 Vue.use(Router)

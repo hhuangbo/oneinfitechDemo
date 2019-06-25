@@ -204,12 +204,17 @@ export default {
                 var path=[]
                 
                 path.push({lnglat:[121.512625,31.293255]});//起点
-                path.push({lnglat:[121.396582,31.245129]});//途径
-                path.push({lnglat:[121.544897,31.219882]});//途径
+                // path.push({lnglat:[121.396582,31.245129]});//途径
+                // path.push({lnglat:[121.544897,31.219882]});//途径
                 path.push({lnglat:[121.382162,31.108247]});//终点
-                truckDriving.search(path, function(status, result) {
+
+                var opts=[
+                    {lnglat:[121.506274,31.317969]},
+                    {lnglat:[121.492197,31.331313]}
+                ]
+                truckDriving.search(path,opts, function(status, result) {
                     if (status === 'complete') {
-                        console.log('绘制货车路线完成')
+                        console.log('绘制货车路线完成',result)
                         if (result.routes && result.routes.length) {
                             _this.drawRoute(result.routes[0]);//路线 
                         }

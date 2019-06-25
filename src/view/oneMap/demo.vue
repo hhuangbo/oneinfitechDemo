@@ -1,6 +1,7 @@
 <template>
   <div>
     <div id="container" class="oneMap"></div>
+    <div id="panel"></div>
   </div>
 </template>
  
@@ -39,26 +40,29 @@ export default {
       _this.map.plugin(["AMap.TruckDriving"],function() {
             var truckDriving = new AMap.TruckDriving({
               policy: 0, // 规划策略
-              size: 1, // 车型大小
+              size: 1, // 车型大小   1：微型车，2：轻型车（默认值），3：中型车，4：重型车
               width: 2.5, // 宽度
               height: 2, // 高度      
               load: 1, // 载重
               weight: 12, // 自重
               axlesNum: 2, // 轴数
               province: '京', // 车辆牌照省份
+              strategy:1,
+              // panel: 'panel'
           })
 // https://lbs.amap.com/api/webservice/guide/api/direction#t9
           
           _this.getJSON('../../static/json/demo.json').then(res=>{
             console.log('哈哈哈',res)
-              var origin=res.data.data.route.origin,destination=res.data.data.route.destination;
+              var route=res.data.data.route
+              var origin=route.origin,destination=route.destination;
               var path=[]
               path.push({lnglat:[origin.split(',')[0],origin.split(',')[1]]});//起点
               path.push({lnglat:[destination.split(',')[0],destination.split(',')[1]]});//终点
               // _this.truckDriving(path)
               truckDriving.search(path, function(status, result) {
                   if (status === 'complete') {
-                      console.log('绘制货车路线完成')
+                      console.log('绘制货车路线完成',result)
                       if (result.routes && result.routes.length) {
                           _this.drawRoute(result.routes[0]);//路线 
                       }
@@ -71,6 +75,7 @@ export default {
     },
     drawRoute (route) {
         var _this=this;
+        console.log('路线了',route)
         var path = _this.parseRouteToPath(route)
 
         console.log(route)
@@ -103,7 +108,7 @@ export default {
     },
     parseRouteToPath(route) {
         var path = []
-
+      console.log('厉害了',route)
        for (var i = 0, l = route.steps.length; i < l; i++) {
             var step = route.steps[i]
 

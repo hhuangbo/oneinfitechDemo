@@ -1,6 +1,14 @@
 <template>
 <div class="menuCate">
     <ul class="ul1">
+        <!-- <li  class="li1  isOpened">
+            <span data-v-2eed9d99="" class="menu-name">项目检索<i data-v-2eed9d99="" class="iconfont icon-e60b"></i></span> 
+            <ul data-v-2eed9d99="" class="ul2">
+                <li data-v-2eed9d99="" class="li2">
+                    <div data-v-2eed9d99="" class="menuItem"><span data-v-2eed9d99="">麦德龙</span> </div>
+                </li>
+            </ul>
+        </li> -->
         <li v-for="(item,index) in menuList" :class="[active1==index ? 'li1  isOpened' :'li1']">
             <span @click="setTegel(item,index)" class="menu-name">
                 {{item.title}}
@@ -49,19 +57,19 @@ export default {
     },
     methods:{
         init() {
-        //初始控制台
-        var _this = this;
-        this.$http.get("../../static/json/menuCate.json")
-            .then(res => {
-            this.menuList = res.data.menuList;
-            })
-            .catch(err => {
-            console.log(err);
-            });
-        },
-        set_serviceCompValue(data){
-        //     this.$parent.serviceInit(data)
-            this.$parent.simplifierInit(data)
+            //初始控制台
+            var _this = this;
+            
+            this.$http.get("../../static/json/menuCate.json")
+                .then(res => {
+                this.menuList = res.data.menuList;
+                console.log('uuuuuu',this.menuList[2])
+                //默认展开收获地址
+                    this.$parent.secondLevelData(this.menuList[2],this.active1)
+                })
+                .catch(err => {
+                console.log(err);
+                });
         },
         setTegel(item,index){//点击是地图展示所有省份的点聚合
             this.active1 = this.active1 == index?-1:index
@@ -70,9 +78,10 @@ export default {
             this.$store.commit('set_wareDataInfo',{});
             this.$store.commit('set_menuActive',this.active1);
             if(item.type=='2' && item.title=='收货地址'){//收获地址
-                if( this.active1==1 && item.level){
+            console.log('就急啊急啊',item)
+                // if( this.active1==1 && item.level){console.log('你看发')
                     this.$parent.secondLevelData(item,this.active1)
-                }
+                // }
             }
         },
         setTegel2(items,type,index){
@@ -80,15 +89,22 @@ export default {
             this.$store.commit('set_wareDataInfo',{})
             this.$store.commit('set_menuActive',this.active1);
             if(type=='2'){//收获地址
-                this.$parent.Level3Data(items)
+                this.$parent.Level2Data(items)
             }
+            console.log(items)
             if(items.title.indexOf('上海') !=-1){this.$parent.trunkLineInit(items);return;}
         },
         enterWork(){//进入工作台 跳转
             this.$alert('进入壹站工作台...', '提示', {
                 confirmButtonText: '确定'
             });
-        }
+        },
+        set_level3Data(data){
+            this.$parent.level3Data(data)
+        },
+        set_serviceCompValue(data){//服务订单
+            this.$parent.simplifierInit(data)
+        },
     }
 };
 </script>

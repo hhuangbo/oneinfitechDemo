@@ -15,7 +15,8 @@ export default {
     },
     methods:{
         level3Data(data){
-            
+            console.log('哈哈哈',data)
+            this.$parent.set_level3Data(data)
         }
     }
 }

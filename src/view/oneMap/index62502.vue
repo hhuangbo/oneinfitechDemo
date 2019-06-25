@@ -97,13 +97,10 @@ export default {
             }
         },
         Level2Data(data){//左侧菜单点击取值 子组件2级
-            console.log('哈哈哈哈',data.info[0].lng,data.info[0].lat)
             if(data){this.cityInit(data)}
         },
         level3Data(data){
-            // console.log('永远永远',data.addressInfo)
-            // 
-            if(data.addressInfo){this.areaInit(data)}
+            data ? this.areaInit(data) :''
         },
         province(data){////省
             var _this=this;
@@ -121,10 +118,7 @@ export default {
                     localStorage.setItem('markersDatas',JSON.stringify(data)) 
                     this.markers.push(marker)
                     this.map.add(marker)//点标记添加到地图上
-                    var proData=data[i]
-                    AMap.event.addListener(marker,'click', ()=>{
-                        this.cityInit(proData);
-                    });
+                    marker.on('click', this.cityInit);
                 } 
             }
             // var count = this.markers.length;
@@ -133,9 +127,9 @@ export default {
             var _this=this,data;
             if(e.target){data=JSON.parse(JSON.stringify(e.target.getExtData())).info;}
             else{data=e.info}
-            this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//地图层级及中心位置
              _this.map.remove(this.markers)
              _this.map.remove(this.markersTwo)//清除点聚合
+            _this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//地图层级及中心位置
             if(data){
                 for (var i = 0; i < data.length; i ++) {
                 var marker=new AMap.Marker({
@@ -145,8 +139,7 @@ export default {
                         content: `<div style="background-color: rgba(16, 117, 170, 0.8); 
                             height: 50px;line-height:50px; width: 50px; text-align:center;border: 1px solid hsl(180, 100%, 40%); 
                             border-radius: 50%; box-shadow: hsl(180, 100%, 50%) 0px 0px 1px;color:#fff" >
-                            
-                            1</div>`,//${data[i].addressInfo.length}
+                            ${data[i].addressInfo.length}</div>`,
                         offset: new AMap.Pixel(-10,-20)//点标记显示位置偏移量
                     });
                     
@@ -168,8 +161,8 @@ export default {
                 // var count=data[i].count  ?  data[i].count : 1;
                 var marker=new AMap.Marker({
                         position: [data[i].lng,data[i].lat],
-                        size: new AMap.Size(20, 20),//_this.iconSize,
-                        icon: require('../../assets/difineDir2_1.png'),
+                        size: _this.iconSize,
+                        icon: require('../../assets/difineDir2.png'),
                         offset: new AMap.Pixel(-13, -30),
                         map:_this.map
                     }); 
@@ -178,8 +171,7 @@ export default {
                     // AMap.event.addListener(marker,'mouseover',()=>{_this.eject_addressInfo()});
             }
             
-        },
-        eject_addressInfo(){console.log('hover了')},
+        },eject_addressInfo(){console.log('hover了')},
         trunkLineInit(data){//干线路线
             var _this=this;
             if(data.title.indexOf('北京') !=-1){_this.map.clearMap();
@@ -200,22 +192,6 @@ export default {
                     strokeWeight: 6,      //线宽
                     // strokeStyle: "solid"  //线样式
                 });
-            _this.map.setFitView();
-                var iconSize=new AMap.Size(40, 40);
-                _this.TruckDMarker.startMarker = new AMap.Marker({//起点
-                    position: lineArr[0],
-                    size: iconSize,
-                    icon: require('../../assets/difineDir1.png'),
-                    offset: new AMap.Pixel(-10, -20),
-                    map: _this.map
-                })
-                _this.TruckDMarker.endMarker = new AMap.Marker({//终点
-                    position: lineArr[lineArr.length-1],
-                    size: iconSize,
-                    icon: require('../../assets/difineDir2.png'),
-                    offset: new AMap.Pixel(-20, -10),
-                    map: _this.map
-                })
             }else if(data.title.indexOf('南京') !=-1){                
                 _this.map.clearMap();
                 var lineArr = [
@@ -237,95 +213,26 @@ export default {
                     strokeWeight: 6,      //线宽
                     // strokeStyle: "solid"  //线样式
                 });
-            _this.map.setFitView();
-                var iconSize=new AMap.Size(40, 40);
-                _this.TruckDMarker.startMarker = new AMap.Marker({//起点
-                    position: lineArr[0],
-                    size: iconSize,
-                    icon: require('../../assets/difineDir1.png'),
-                    offset: new AMap.Pixel(-10, -20),
-                    map: _this.map
-                })
-                _this.TruckDMarker.endMarker = new AMap.Marker({//终点
-                    position: lineArr[lineArr.length-1],
-                    size: iconSize,
-                    icon: require('../../assets/difineDir2.png'),
-                    offset: new AMap.Pixel(-20, -10),
-                    map: _this.map
-                })
             }
         },
         simplifierInit(data){//交付轨迹
-        
-        console.log('服务订单',data.path.length-1)
-            var _this=this;var iconSize=new AMap.Size(20, 20);
-            _this.map.clearMap()
-            var marker = new AMap.Marker({
-                map: _this.map,
-                position: data.path[0],
-                size: (10,10),
-                icon:  require('../../assets/car.png'),//"https://webapi.amap.com/images/car.png",//
-                offset: new AMap.Pixel(-26, -13),
-                autoRotation: true,
-                angle:-90,
-            });
-              // 绘制轨迹
-            var polyline = new AMap.Polyline({
-                map: _this.map,
-                path: data.path,
-                showDir:true,
-                strokeColor: "#28F",  //线颜色
-                strokeWeight: 6,      //线宽
-            });    
-            var passedPolyline = new AMap.Polyline({
-                map: _this.map,
-                strokeColor: "#AF5",  //线颜色
-                strokeWeight: 6,      //线宽
-            });
-            _this.map.setFitView();
-            marker.moveAlong(data.path, 100000);
-           
-           
-           var iconSize=new AMap.Size(40, 40);
-            _this.TruckDMarker.startMarker = new AMap.Marker({//起点
-                position: data.path[0],
-                size: iconSize,
-                icon: require('../../assets/difineDir1.png'),
-                offset: new AMap.Pixel(-10, -20),
-                map: _this.map
-            })
-             _this.TruckDMarker.startMarker.setLabel({
-                offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
-                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'left', //设置文本标注方位
-            }); 
-            _this.TruckDMarker.endMarker = new AMap.Marker({//终点
-                position: data.path[data.path.length-1],
-                size: iconSize,
-                icon: require('../../assets/difineDir2.png'),
-                offset: new AMap.Pixel(-20, -10),
-                map: _this.map
-            })
-            _this.TruckDMarker.endMarker.setLabel({
-                offset: new AMap.Pixel(0, 10),  //设置文本标注偏移量
-                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'bottom', //设置文本标注方位
-            });
-            // if(data.type==1){
-            //     AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
-            //         if (!PathSimplifier.supportCanvas) {
-            //             alert('当前环境不支持 Canvas！');
-            //             return;
-            //         }
-            //         //启动页面
-            //         _this.set_initPage(data,PathSimplifier);
-            //     });
-            // }else{
+        console.log('服务订单',data)
+            var _this=this;
+            if(data.type==1){
+                AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
+                    if (!PathSimplifier.supportCanvas) {
+                        alert('当前环境不支持 Canvas！');
+                        return;
+                    }
+                    //启动页面
+                    _this.set_initPage(data,PathSimplifier);
+                });
+            }else{
                 
-            //     _this.travelCar.destroy()//销毁巡航器
-            //     if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
-            //      _this.map.remove([_this.TruckDMarker.startMarker,_this.TruckDMarker.endMarker,_this.TruckDMarker.endMarker2,_this.TruckDMarker.routeLine])
-            // }
+                _this.travelCar.destroy()//销毁巡航器
+                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
+                 _this.map.remove([_this.TruckDMarker.startMarker,_this.TruckDMarker.endMarker,_this.TruckDMarker.endMarker2,_this.TruckDMarker.routeLine])
+            }
         },
         set_initPage(orderData,PathSimplifier) {
             var _this=this;

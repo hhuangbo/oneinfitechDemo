@@ -63,7 +63,6 @@ export default {
             this.$http.get("../../static/json/menuCate.json")
                 .then(res => {
                 this.menuList = res.data.menuList;
-                console.log('uuuuuu',this.menuList[2])
                 //默认展开收获地址
                     this.$parent.secondLevelData(this.menuList[2],this.active1)
                 })
@@ -78,10 +77,12 @@ export default {
             this.$store.commit('set_wareDataInfo',{});
             this.$store.commit('set_menuActive',this.active1);
             if(item.type=='2' && item.title=='收货地址'){//收获地址
-            console.log('就急啊急啊',item)
-                // if( this.active1==1 && item.level){console.log('你看发')
+                // if( this.active1==1 && item.level){
                     this.$parent.secondLevelData(item,this.active1)
                 // }
+            }
+            if(item.type=='3' && item.title=='干线路线'){
+                this.$parent.trunkLineInit(item)
             }
         },
         setTegel2(items,type,index){
@@ -91,8 +92,7 @@ export default {
             if(type=='2'){//收获地址
                 this.$parent.Level2Data(items)
             }
-            console.log(items)
-            if(items.title.indexOf('上海') !=-1){this.$parent.trunkLineInit(items);return;}
+            if(items.title.indexOf('上海') !=-1){this.$parent.singleRoute(items);return;}
         },
         enterWork(){//进入工作台 跳转
             this.$alert('进入壹站工作台...', '提示', {

@@ -1,7 +1,7 @@
 <template>
     <!-- 组件--普通列表 -->
     <ul class="tempMenu2">
-        <li v-for="item in data" @click="level3Data(item)">{{item.title}}</li>
+        <li v-for="item in data" @click="level3Data(item)"><span>{{item.title}}</span><span>{{item.count}}</span></li>
     </ul>
 </template>
 
@@ -15,7 +15,6 @@ export default {
     },
     methods:{
         level3Data(data){
-            console.log('哈哈哈',data)
             this.$parent.set_level3Data(data)
         }
     }
@@ -28,10 +27,14 @@ export default {
     opacity: .8;
 }
 li{    
+    width: 40%;
+    margin: 0 auto;
     color: #fff;
     text-align: center;
     font-size: 14px;
     height: 34px;line-height: 34px;
     cursor: pointer;
+    display: flex;
+    justify-content: space-between;
 }
 </style>

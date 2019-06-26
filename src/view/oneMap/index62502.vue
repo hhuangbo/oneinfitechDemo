@@ -171,7 +171,9 @@ export default {
                     // AMap.event.addListener(marker,'mouseover',()=>{_this.eject_addressInfo()});
             }
             
-        },eject_addressInfo(){console.log('hover了')},
+        },eject_addressInfo(){
+            
+        },
         trunkLineInit(data){//干线路线
             var _this=this;
             if(data.title.indexOf('北京') !=-1){_this.map.clearMap();
@@ -216,7 +218,6 @@ export default {
             }
         },
         simplifierInit(data){//交付轨迹
-        console.log('服务订单',data)
             var _this=this;
             if(data.type==1){
                 AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
@@ -264,7 +265,6 @@ export default {
             });
             window.pathSimplifierIns=pathSimplifierIns
             //轨迹
-            console.log('哈哈哈',orderData.addressPath)
             pathSimplifierIns.setData(orderData.addressPath);
             _this.routeTruckMarker(orderData.addressPath)
 
@@ -398,7 +398,6 @@ export default {
             }
         },
         _renderClusterMarker(context) { 
-            console.log('真的',this.markers)
             var count = this.markers.length;
             var factor = Math.pow(context.count / count, 1 / 18);
             var div = document.createElement('div');

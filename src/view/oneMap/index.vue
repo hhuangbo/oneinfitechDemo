@@ -37,7 +37,7 @@ export default {
                 resizeEnable:true,//自适应大小
                 zoom:5,//默认层级
                 zooms:[4,18],//最小最大
-                center: [110.244156,35.138726]
+                center: [110.98934,36.500585]
             },
             iconSize:new AMap.Size(30, 30),
             markers:[],
@@ -61,14 +61,17 @@ export default {
     },
     watch:{
         menuActive(data){
-            if(data==2){return;}else{this.map.clearMap()}
+            if(data==2){console.log(this.TruckDMarker.startMarker);
+                if(window.pathSimplifierIns){pathSimplifierIns.setData([]);};
+                this.remove([this.TruckDMarker.startMarker,this.TruckDMarker.endMarker2,this.TruckDMarker.endMarker]);
+                return;}else{this.map.clearMap();}
             if(data !=1){
                 this.map.clearMap()//清除全部覆盖物
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
             }else if(data==1){
                 this.map.setZoom(5)
-                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
-                 this.map.remove([this.TruckDMarker.startMarker,this.TruckDMarker.endMarker,this.TruckDMarker.endMarker2,this.TruckDMarker.routeLine])
+                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}
+                //  this.map.remove([this.TruckDMarker.startMarker,this.TruckDMarker.endMarker,this.TruckDMarker.endMarker2,this.TruckDMarker.routeLine])
             }
         }
     },
@@ -98,11 +101,11 @@ export default {
             }
         },
         Level2Data(data){//左侧菜单点击取值 子组件2级
-            this.map.setZoomAndCenter(10,[data.info[0].lng,data.info[0].lat]);//地图层级及中心位置
+            this.map.setZoomAndCenter(9,[data.info[0].lng,data.info[0].lat]);//地图层级及中心位置
             if(data){this.cityInit(data)}
         },
         level3Data(data){
-            this.map.setZoomAndCenter(13,[data.addressInfo[0].lng,data.addressInfo[0].lat]);//设置地图层级
+            this.map.setZoomAndCenter(11,[data.addressInfo[0].lng,data.addressInfo[0].lat]);//设置地图层级
             if(data.addressInfo){this.areaInit(data.addressInfo)}
         },
         province(data){////省
@@ -110,23 +113,21 @@ export default {
              _this.map.remove(this.markersTwo)//清除点聚合 
                 this.map.setZoomAndCenter(5,[106.259411,37.072703]);
             // _this.map.clearOverlays()
-            if(data){console.log('进来没')
+            if(data){
                 for (var i = 0; i < data.length; i ++) {                    
                     var marker=new AMap.Marker({
                         position: [data[i].lng,data[i].lat],
                         // map: _this.map,//点标记添加到地图上
                         extData:data[i],//自定义属性值
                         content:  `<div style="background-color: hsla(208, 80%, 48%, 0.7); height: 50px;line-height: 50px; width: 50px;text-align:center; border: 1px solid hsl(208, 80%, 48%); border-radius: 50%; box-shadow: hsl(208, 80%, 48%) 0px 0px 1px;">${data[i].count}</div> `,
-                        offset: new AMap.Pixel(-15, -15)//点标记显示位置偏移量
+                        offset: new AMap.Pixel(-30, -30)//点标记显示位置偏移量
                     })
                     localStorage.setItem('markersDatas',JSON.stringify(data)) 
                     this.markers.push(marker);
                     _this.map.add(marker)//点标记添加到地图上
-                    console.log('哈44444444444哈哈',data[i])
                     
                     AMap.event.addListener(marker,'click', (e)=>{
                         var proData=JSON.parse(JSON.stringify(e.target.getExtData()))
-                        console.log('8888',proData)
                         this.cityInit(proData);
                     });
                 } 
@@ -134,11 +135,8 @@ export default {
             // var count = this.markers.length;
         },
         cityInit(e){//市
-            var _this=this,data;
-            if(e.target){data=JSON.parse(JSON.stringify(e.target.getExtData())).info;}
-            else{data=e.info}
-            console.log('9999999',data)
-            this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//地图层级及中心位置
+            var _this=this,data=e.info
+            this.map.setZoomAndCenter(9,[data[0].lng,data[0].lat]);//地图层级及中心位置
              _this.map.remove(this.markers)
              _this.map.remove(this.markersTwo)//清除点聚合
             if(data){
@@ -152,17 +150,13 @@ export default {
                             border-radius: 50%; box-shadow: hsl(180, 100%, 50%) 0px 0px 1px;color:#fff" >
                             
                             1</div>`,//${data[i].addressInfo.length}
-                        offset: new AMap.Pixel(-10,-20)//点标记显示位置偏移量
+                        offset: new AMap.Pixel(-20,-30)//点标记显示位置偏移量
                     });
                     
                     localStorage.setItem('markersTwoDatas',JSON.stringify(data)) 
                     this.markersTwo.push(marker);
-                    // var  addData=data[i]
-                    // console.log('就是',addData)
                     AMap.event.addListener(marker,'click', (e)=>{
-                        
                         var addData=JSON.parse(JSON.stringify(e.target.getExtData()))
-                        console.log('99999999',addData)
                         this.areaInit(addData);
                     });
 
@@ -170,18 +164,14 @@ export default {
             }
         },
         areaInit(data){//区 difineDir2
-                    console.log('就不不不不不是',data)
             var _this=this;_this.map.remove(this.markersTwo)//清除点聚合 
             if(data.addressInfo){
-                console.log('哈哈2222222222哈哈',data)
-                _this.map.setZoomAndCenter(12,[data.lng,data.lat]);
+                _this.map.setZoomAndCenter(11,[data.lng,data.lat]);
                 data=data.addressInfo;
             }
-            else{
-                console.log('哈哈11111111111哈哈',data);_this.map.setZoomAndCenter(12,[data[0].lng,data[0].lat]);data=data;}//设置地图层级
-            var i=0;
-            for (i; i < data.length; i ++) {
-                // var count=data[i].count  ?  data[i].count : 1;
+            else{_this.map.setZoomAndCenter(11,[data[0].lng,data[0].lat]);data=data;}
+            _this.map.remove(this.addressMarkers)
+            for (var i=0; i < data.length; i ++) {
                 var marker=new AMap.Marker({
                         position: [data[i].lng,data[i].lat],
                         size: new AMap.Size(20, 20),//_this.iconSize,
@@ -191,15 +181,36 @@ export default {
                     }); 
                     this.addressMarkers.push(marker);
                     _this.map.add(marker)//点标记添加到地图上
-                    AMap.event.addListener(marker,'click',()=>{_this.eject_addressInfo()});
+                    AMap.event.addListener(marker,'click',(e)=>{
+                        var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
+                        _this.eject_addressInfo(areaData)
+                    });
                     // AMap.event.addListener(marker,'mouseover',()=>{_this.eject_addressInfo()});
             }
             
         },
-        eject_addressInfo(){console.log('hover了')},
-        trunkLineInit(data){//干线路线
+        eject_addressInfo(areaData){
+            
+        },
+        trunkLineInit(data){
             var _this=this;
-            if(data.title.indexOf('北京') !=-1){_this.map.clearMap();
+            AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
+                if (!PathSimplifier.supportCanvas) {
+                    alert('当前环境不支持 Canvas！');
+                    return;
+                }
+                //启动页面
+                _this.set_initPage(data,PathSimplifier);
+            });
+        },
+        singleRoute(data){//干线路线
+            var _this=this;
+            _this.map.clearMap();
+            if (window.pathSimplifierIns) {
+                pathSimplifierIns.setData([]);
+            }
+
+            if(data.title.indexOf('北京') !=-1){
                 var lineArr = [
                     [121.424029,31.189007],
                     [118.78731,32.235739],
@@ -273,10 +284,9 @@ export default {
             }
         },
         simplifierInit(data){//交付轨迹
-        
-        console.log('服务订单',data.path.length-1)
             var _this=this;var iconSize=new AMap.Size(20, 20);
             _this.map.clearMap()
+            console.log(data)
             var marker = new AMap.Marker({
                 map: _this.map,
                 position: data.path[0],
@@ -300,7 +310,14 @@ export default {
                 strokeWeight: 6,      //线宽
             });
             _this.map.setFitView();
-            marker.moveAlong(data.path, 100000);
+            marker.moveAlong(data.path, 100000)
+            // marker.moveend(console.log('qqqqqqqqqqqqqqqqqqqqq'))
+            // marker.movealong(marker.stopMove())
+            // ,(e)=>{
+            //     console.log(e);
+                
+            //     // marker.stopMove();
+            //     });
            
            
            var iconSize=new AMap.Size(40, 40);
@@ -346,22 +363,18 @@ export default {
         },
         set_initPage(orderData,PathSimplifier) {
             var _this=this;
-            //创建组件实例
+            _this.map.clearMap();
             var pathSimplifierIns = new PathSimplifier({
                 zIndex: 100,
-                map: _this.map, //所属的地图实例
+                map: _this.map, 
                 getPath: function(pathData, pathIndex) {
-                    //返回轨迹数据中的节点坐标信息，[AMap.LngLat, AMap.LngLat...] 或者 [[lng|number,lat|number],...]
                     return pathData.path;
                 },
                 getHoverTitle: function(pathData, pathIndex, pointIndex) {
-                    //返回鼠标悬停时显示的信息
                     if (pointIndex >= 0) {
-                        //鼠标悬停在某个轨迹节点上
-                        return pathData.name// + '，点:' + pointIndex + '/' + pathData.path.length;
+                        return pathData.name
                     }
-                    //鼠标悬停在节点之间的连线上
-                    return pathData.name// + '，点数量' + pathData.path.length;
+                    return pathData.name
                 },
                 renderOptions: {
                     //轨迹线的样式
@@ -374,63 +387,38 @@ export default {
             });
             window.pathSimplifierIns=pathSimplifierIns
             //轨迹
-            console.log('哈哈哈',orderData.addressPath)
-            pathSimplifierIns.setData(orderData.addressPath);
-            _this.routeTruckMarker(orderData.addressPath)
-
-            _this.travelCar = pathSimplifierIns.createPathNavigator(0, {
-                // loop: true,
-                speed: 2000,
-                pathNavigatorStyle: {
-                    width: 25,
-                    height: 35,
-                    autoRotate:true,
-                    content: PathSimplifier.Render.Canvas.getImageContent(require('../../assets/car.png'), onload, onerror),
-                    strokeStyle: null,
-                    fillStyle: null,
-                    //经过路径的样式
-                    pathLinePassedStyle: {
-                        lineWidth: 6,
-                        strokeStyle: '#0f9532',
-                        dirArrowStyle: {
-                            stepSpace: 15,
-                            strokeStyle: '#fff'
-                        }
-                    }
-                }
-            });
-            _this.travelCar.start();
-            
-                // _this.travelCar.destroy()//销毁巡航器
+            _this.$http.get('../../static/json/routes.json').then(res =>{
+                var routeData=res.data;
+                var travelRoutes=[];
+                pathSimplifierIns.setData(routeData);
+                _this.routeTruckMarker(routeData)
+            }).catch(err =>{
+                console.log(err)
+            })
         },
         routeTruckMarker(routePath){
             var _this=this;
-            // var Iconpath = _this.parseRouteToPath(route);
-            var iconSize=new AMap.Size(40, 40);
-            _this.TruckDMarker.startMarker = new AMap.Marker({//起点
-                position: routePath.path[0],
-                size: iconSize,
-                icon: require('../../assets/difineDir1.png'),
-                offset: new AMap.Pixel(-10, -20),
-                map: _this.map
-            })
-             _this.TruckDMarker.startMarker.setLabel({
-                offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
-                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'left', //设置文本标注方位
-            }); 
-            _this.TruckDMarker.endMarker = new AMap.Marker({//终点
-                position: routePath.path[routePath.path.length-1],
-                size: iconSize,
-                icon: require('../../assets/difineDir2.png'),
-                offset: new AMap.Pixel(-20, -10),
-                map: _this.map
-            })
-            _this.TruckDMarker.endMarker.setLabel({
-                offset: new AMap.Pixel(0, 10),  //设置文本标注偏移量
-                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'bottom', //设置文本标注方位
-            });
+            for(var i=0;i<routePath.length;i++){
+                var iconSize=new AMap.Size(30, 30);
+                _this.TruckDMarker.startMarker = new AMap.Marker({//起点
+                    position: routePath[0].path[0],
+                    size: iconSize,
+                    icon: require('../../assets/difineDir1.png'),
+                    offset: new AMap.Pixel(-10, -10),
+                    map: _this.map
+                })
+                // this.markers.push(_this.TruckDMarker.startMarker);
+                // _this.map.add(_this.TruckDMarker.startMarker)//点标记添加到地图上
+                _this.TruckDMarker.endMarker = new AMap.Marker({//终点
+                    position: routePath[i].path[routePath[i].path.length-1],
+                    size: iconSize,
+                    icon: require('../../assets/difineDir2.png'),
+                    offset: new AMap.Pixel(-20, -10),
+                    map: _this.map
+                })
+                // this.markers.push(_this.TruckDMarker.endMarker);
+                // _this.map.add(_this.TruckDMarker.endMarker)//点标记添加到地图上
+            }
         },
         drawRoute(route){//点标记
             var _this=this;
@@ -485,33 +473,25 @@ export default {
         },
         _onZoomEnd(){//监听地图缩放
             var _this=this;
+            /**
+             * zoom
+             * 5-7  省份
+             * 8-10 市/各别省区
+             */
             if (this.map.getZoom() < 7) {//全国下的省份
                 var markersDatas=JSON.parse(localStorage.getItem('markersDatas'));
                 this.map.remove(this.markersTwo)//移除不再层级的点聚合
                 this.map.remove(this.addressMarkers)
-                if(this.markers ){
-                // this.province(JSON.parse(localStorage.getItem('markersDatas')))
-                }
-            }else if((this.map.getZoom() < 9) && (this.map.getZoom() > 7)){//省份下的市
-                // for (var i = 0; i < this.markersTwo.length; i += 1) {
-                //     this.map.remove(this.markersTwo[i].subMarkers);
-                // }
-                // this.map.add(this.markersTwo);
+            }else if((this.map.getZoom() < 10) && (this.map.getZoom() > 7)){//省份下的市
                 this.map.remove(this.markers)
                 this.map.remove(this.addressMarkers)
                 // this.cityInit(JSON.parse(localStorage.getItem('markersTwoDatas')))
-            }else if(this.map.getZoom() < 12 && this.map.getZoom() > 9){//市下面的区或县
-                this.map.remove(this.markers)
-                this.map.remove(this.addressMarkers)
-                // this.map.remove(this.markersTwo)
-                // for (var i = 0; i < markersThree.length; i += 1) {
-                //     map.remove(markersThree[i].subMarkers);
-                // }
-                // map.add(markersThree);
+            }else if(this.map.getZoom() < 14 && this.map.getZoom() > 10){//市下面的区或县
+                // this.map.remove(this.markers)
+                // this.map.remove(this.addressMarkers)
             }
         },
-        _renderClusterMarker(context) { 
-            console.log('真的',this.markers)
+        _renderClusterMarker(context) {
             var count = this.markers.length;
             var factor = Math.pow(context.count / count, 1 / 18);
             var div = document.createElement('div');

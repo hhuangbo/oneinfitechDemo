@@ -124,9 +124,7 @@ export default {
             // var count = this.markers.length;
         },
         cityInit(e){//市
-            var _this=this,data;
-            if(e.target){data=JSON.parse(JSON.stringify(e.target.getExtData())).info;}
-            else{data=e.info}
+            var _this=this,data=e.info
              _this.map.remove(this.markers)
              _this.map.remove(this.markersTwo)//清除点聚合
             _this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//地图层级及中心位置
@@ -171,7 +169,9 @@ export default {
                     // AMap.event.addListener(marker,'mouseover',()=>{_this.eject_addressInfo()});
             }
             
-        },eject_addressInfo(){console.log('hover了')},
+        },eject_addressInfo(){
+            
+        },
         trunkLineInit(data){//干线路线
             var _this=this;
             if(data.title.indexOf('北京') !=-1){_this.map.clearMap();
@@ -216,23 +216,58 @@ export default {
             }
         },
         simplifierInit(data){//交付轨迹
-        console.log('服务订单',data)
-            var _this=this;
-            if(data.type==1){
-                AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
-                    if (!PathSimplifier.supportCanvas) {
-                        alert('当前环境不支持 Canvas！');
-                        return;
-                    }
-                    //启动页面
-                    _this.set_initPage(data,PathSimplifier);
-                });
-            }else{
+             var _this=this;
+            this.map.clearMap()
+            _this.map.remove(_this.markers)
+               //调用 Driving
+            _this.map.plugin(["AMap.TruckDriving"],function() {
+                 var truckDriving = new AMap.TruckDriving({
+                    policy: 0, // 规划策略
+                    size: 1, // 车型大小
+                    width: 2.5, // 宽度
+                    height: 2, // 高度      
+                    load: 1, // 载重
+                    weight: 12, // 自重
+                    axlesNum: 2, // 轴数
+                    province: '京', // 车辆牌照省份
+                })
+                // 根据起终点经纬度规划驾车导航路线
+                var path=[]
                 
-                _this.travelCar.destroy()//销毁巡航器
-                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}//清空上次传入的轨迹
-                 _this.map.remove([_this.TruckDMarker.startMarker,_this.TruckDMarker.endMarker,_this.TruckDMarker.endMarker2,_this.TruckDMarker.routeLine])
-            }
+                path.push({lnglat:[data.path[0]]});//起点
+
+                var pathLine=data.path//途径
+                // for(var i=1;i<pathLine.length-1;i++){
+                //     path.push({lnglat:[pathLine[i]]})
+                    
+                //     _this.TruckDMarker.endMarker2 = new AMap.Marker({//终点
+                //         position: pathLine[i],
+                //         size: _this.iconSize,
+                //         icon: require('../../assets/difineDir2.png'),
+                //         offset: new AMap.Pixel(-13, -20),
+                //         map: _this.map
+                //     })
+                //     _this.TruckDMarker.endMarker2.setLabel({
+                //         offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                //         content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                //         direction: 'right', //设置文本标注方位
+                //     });
+                // }
+                // path.push({lnglat:[121.396582,31.245129]});//途径
+                // path.push({lnglat:[121.544897,31.219882]});//途径
+                path.push({lnglat:[data.path[data.path.length-1]]});//终点
+
+                truckDriving.search(path, function(status, result) {
+                    if (status === 'complete') {
+                        console.log('绘制货车路线完成',result)
+                        if (result.routes && result.routes.length) {
+                            _this.drawRoute(result.routes[0]);//路线 
+                        }
+                    } else {
+                        console.log('获取货车数据失败：' + result)
+                    }
+                });
+            })
         },
         set_initPage(orderData,PathSimplifier) {
             var _this=this;
@@ -267,17 +302,6 @@ export default {
             _this.$http.get('../../static/json/routes.json').then(res =>{
                 var routeData=res.data;
                 var travelRoutes=[];
-                console.log('哈哈哈',res.data)
-                // for (var i = 0, len=routeData.length; i < len; i++) {
-                //     console.log(routeData.splice(i))
-                //     routeData.splice(i,0,{
-                //         path: PathSimplifier.getGeodesicPath(
-                //             routeData[i].path[0],path[routeData[i].path.length -1 ],100)
-                //     })
-                //     i++;
-                //     len++;
-                // }
-                // routeData.push.apply(routeData,travelRoutes);
                 pathSimplifierIns.setData(routeData.path);
                 _this.routeTruckMarker(res.data)
 
@@ -343,6 +367,17 @@ export default {
             var _this=this;
             var path = _this.parseRouteToPath(route);
             var difineICON=require('../../assets/difineDir1.png');
+            var marker = new AMap.Marker({
+                map: _this.map,
+                position: path[0],
+                size: (10,10),
+                icon:  require('../../assets/car.png'),//"https://webapi.amap.com/images/car.png",//
+                offset: new AMap.Pixel(-26, -13),
+                autoRotation: true,
+                angle:-90,
+                zIndex:1
+            });
+            marker.moveAlong(path, 1000000)
             // var iconSize=new AMap.Size(30, 30);
             _this.TruckDMarker.startMarker = new AMap.Marker({//起点
                 position: path[0],
@@ -357,11 +392,11 @@ export default {
                 direction: 'right', //设置文本标注方位
             });
             // startMarker.on('mousemove',_this.infosdasd)
-            _this.TruckDMarker.endMarker = new AMap.Marker({//终点
+             _this.TruckDMarker.endMarker = new AMap.Marker({//终点
                 position: path[path.length - 1],
                 size: _this.iconSize,
                 icon: require('../../assets/difineDir2.png'),
-                offset: new AMap.Pixel(60, 20),
+                offset: new AMap.Pixel(-13, -20),
                 map: _this.map
             })
             _this.TruckDMarker.endMarker.setLabel({
@@ -376,6 +411,7 @@ export default {
                 strokeColor: '#28F',
             })
             _this.TruckDMarker.routeLine.setMap(this.map)
+            
              // 调整视野达到最佳显示区域
             _this.map.setFitView([ _this.TruckDMarker.startMarker, _this.TruckDMarker.endMarker, _this.TruckDMarker.routeLine ])
         },
@@ -415,7 +451,6 @@ export default {
             }
         },
         _renderClusterMarker(context) { 
-            console.log('真的',this.markers)
             var count = this.markers.length;
             var factor = Math.pow(context.count / count, 1 / 18);
             var div = document.createElement('div');

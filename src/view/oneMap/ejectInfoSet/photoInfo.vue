@@ -36,9 +36,6 @@ export default {
         // ...mapGetters(['wareDataInfo'])
     },
     watch:{
-        // wareDataInfo(data){
-        //     console.log('永远永远',data)
-        // },
         dataInfo(res){
             console.log(res);
             

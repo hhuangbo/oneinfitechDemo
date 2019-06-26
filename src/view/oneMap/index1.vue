@@ -57,7 +57,6 @@ export default {
     },
     watch:{
         menuActive(data){
-            console.log(data)
             if(data !=1){
                 this.map.clearMap()//清除全部覆盖物
                 // this.map.remove(this.markers)
@@ -87,14 +86,6 @@ export default {
         AMap.event.addListener(that.map,'zoomend',function(){
             that._onZoomEnd()
         });
-        // console.log('好的哈大当家',this.$store.state.serviceData)
-        // if(this.wareDataInfo.type==1 || this.wareDataInfo.type==3){
-        //     console.log('改清除了')
-        //     this.map.clearMap()//清除覆盖物
-        //      this.map.remove(this.markers)//移除不再层级的点聚合
-        //     //   this.map.remove(this.markersTwo)//移除不再层级的点聚合
-        // }
-        // this.addCluster()
  
     },
     methods:{
@@ -161,7 +152,6 @@ export default {
             
              _this.map.remove(this.markers)
              _this.map.remove(this.markersTwo)//清除点聚合
-            console.log(data)
             _this.map.setZoomAndCenter(10,[data[0].lng,data[0].lat]);//地图层级及中心位置
             if(data){
                 for (var i = 0; i < data.length; i ++) {
@@ -301,7 +291,6 @@ export default {
             }
         },
         _renderClusterMarker(context) { 
-            console.log('真的',this.markers)
             var count = this.markers.length;
             var factor = Math.pow(context.count / count, 1 / 18);
             var div = document.createElement('div');

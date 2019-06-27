@@ -3,7 +3,7 @@
         <div class="serContent">            
             <h3 class="">ONEINFITECH</h3>
             <div class="searchCont">
-                <input class="searchInp" type="text" :value="searchVal" placeholder="请输入关键字查询"  @keyup.enter="searchEvent"/>
+                <input class="searchInp" type="text" v-model.trim="searchVal" placeholder="请输入关键字查询"  @keyup.enter="searchEvent"/>
                 <button class="btnsearch" @click="searchEvent">搜索</button>
             </div>
             <ul class="hotSearch">
@@ -26,11 +26,11 @@ export default {
     methods:{
         searchEvent(){
             //查询成功跳转到map页面
-            this.$router.push({path:'/oneMap'});
+            this.$router.push({name:'oneMap',params:{searchVal:this.searchVal}});
         },
         handlehotSearch(item){
-            // this.searchVal=item
-            this.$router.push({path:'/oneMap'});
+            this.searchVal=item
+            this.$router.push({name:'oneMap',params:{searchVal:this.searchVal}});
         }
     }
 }

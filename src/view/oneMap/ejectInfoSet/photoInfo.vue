@@ -1,8 +1,8 @@
 <template>
 <div class="photoInfo" v-show="infoIsShow">
     <ul class="infoCont">
-        <li v-for="item in phoInfoData">
-            <img :src="item.img"/>
+        <li v-for="item in phoInfoData" > 
+            <img :src="item.img" @click="handleImg(item)" :class="[imgzoom==1 ? 'zoom-in' : '',imgzoom==2?'zoom-out':'']"/>
             <span>{{item.title}}</span>
         </li>
     </ul>
@@ -23,6 +23,7 @@ export default {
     ],
     data(){
         return{
+            imgzoom:0,
             infoIsShow:true,//是否显示
             phoInfoData:[
                 {title:'整体园区',img:require('../../../assets/c1.jpg')},
@@ -48,12 +49,21 @@ export default {
         init(){
             
         },
+        handleImg(data){
+            console.log(data)
+            this.imgzoom=1;
+        },
         handleEnlarge(){//点击放大
             console.log('放大');
+            this.imgzoom=1;
+            // setInterval(() => {
+            //     this.imgzoom=2;
+            // }, 2000);
             
         },
         handleNarrow(){//点击缩小
             console.log('缩小');
+            this.imgzoom=2;
 
         },
         handleRefresh(){//刷新
@@ -109,5 +119,11 @@ export default {
     right: 4px;
     font-size: 20px;
     cursor: pointer;
+}
+.zoom-in{
+    cursor:zoom-in;
+}
+.zoom-out{
+    cursor:zoom-out;
 }
 </style>

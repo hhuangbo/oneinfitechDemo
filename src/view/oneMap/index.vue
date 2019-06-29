@@ -9,6 +9,11 @@
             <warehInfo :dataInfo="wareDataInfo"  :class="[wareDataInfo && wareDataInfo.type==2 ? 'animated fadeInRight' : 'animated fadeOutRight']" v-if="wareDataInfo && wareDataInfo.type==2"/>
             <!--门店信息弹框-->
             <storehouseInfo :dataInfo="storeInfoData" v-if="storeCheck" />
+            <!--搜索条件-->
+            <searchTerm class="animated fadeInRight" />
+            <detailList class="animated fadeInRight" :data="orderInfoData" v-if="orderInfoShow"/>
+            <customerEva class="animated fadeInRight"/>
+            
         <!-- </transition> -->
         <div id="panel"></div>
     </div>
@@ -21,13 +26,18 @@ import menuCate from './menuCate/index'
 import photoInfo from './ejectInfoSet/photoInfo'
 import warehInfo from './ejectInfoSet/warehInfo'
 import storehouseInfo from './ejectInfoSet/storehouseInfo'
+import searchTerm from './ejectInfoSet/searchTerm'
+import detailList from './ejectInfoSet/detailList'
+import customerEva from './ejectInfoSet/customerEva'
 import {mapGetters} from 'vuex'
 export default {
     components:{
-        menuCate,photoInfo,warehInfo,storehouseInfo
+        menuCate,photoInfo,warehInfo,storehouseInfo,searchTerm,detailList,customerEva
     },
     data(){
         return{
+            orderInfoData:[],
+            orderInfoShow:false,
             opts:{
     			pointArr:[],//判定点是否在花圈的形状中的参数
     			geoc:null,//经纬度解析地址
@@ -298,6 +308,10 @@ export default {
                     map: _this.map
                 })
             }
+        },
+        orderInfoVal(data){//订单信息
+            this.orderInfoShow=true
+            this.orderInfoData=data
         },
         simplifierInit(data){//交付轨迹 服务订单 
             var _this=this;

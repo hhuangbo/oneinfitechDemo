@@ -3,7 +3,15 @@
         <div class="serContent">            
             <h3 class="">ONEINFITECH</h3>
             <div class="searchCont">
-                <input class="searchInp" type="text" v-model.trim="searchVal" placeholder="请输入关键字查询"  @keyup.enter="searchEvent"/>
+                <el-select v-model="selectValue" placeholder="请选择">
+                    <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.value">
+                    </el-option>
+                </el-select>
+                <input class="searchInp" type="text"  autofocus="autofocus" v-model.trim="searchVal" @keyup.enter="searchEvent"/>
                 <button class="btnsearch" @click="searchEvent">搜索</button>
             </div>
             <ul class="hotSearch">
@@ -20,17 +28,27 @@ export default {
     data(){
         return{
             searchVal:'',
-            hotData:['麦德龙','保时捷','索尼','赛默飞']
+            hotData:['麦德龙','保时捷','索尼','赛默飞'],
+            options:[{
+                value: '项目检索'
+            },{
+                value: '干线路线'
+            },{
+                value: '收货地址'
+            },{
+                value: '服务订单'
+            }],
+            selectValue:''
         }
     },
     methods:{
-        searchEvent(){
+        searchEvent(){//传递多个参数？？？？
             //查询成功跳转到map页面
-            this.$router.push({name:'oneMap',params:{searchVal:this.searchVal}});
+            this.$router.push({name:'oneMap',params:{selectType:this.selectValue,searchVal:this.searchVal}});
         },
         handlehotSearch(item){
             this.searchVal=item
-            this.$router.push({name:'oneMap',params:{searchVal:this.searchVal}});
+            this.$router.push({name:'oneMap',params:{selectType:this.selectValue,searchVal:this.searchVal}});
         }
     }
 }
@@ -69,7 +87,9 @@ export default {
     background-color: #fff;
     border: none;
     padding: 10px 8px;
-    border-radius: 5px;
+    border-radius: 5px;    
+    border-left: 1px solid #f3e6e6;
+    border-radius: 0 4px 4px 0;
 }
 .btnsearch{
     width: 15%;
@@ -91,4 +111,5 @@ export default {
     }
 
 }
+
 </style>

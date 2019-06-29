@@ -28,7 +28,10 @@ export default {
                     this.$store.commit('set_wareDataInfo',item)
                     break;
                 case '3'://服务订单
-                        this.$parent.set_serviceCompValue(item)
+                        if(item.type=='1'){this.$parent.set_serviceCompValue(item)}//交付轨迹
+                        else if(item.type=='2'){//订单信息
+                            this.$parent.set_orderInfoVal(item)
+                        }
                     break;
             }
         }

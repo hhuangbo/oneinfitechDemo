@@ -1,37 +1,4 @@
-.el-checkbox__input{float: right;}
-.el-checkbox__inner{
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    margin-left: 5px;
-    border: 1px solid $C1075aa;
+.searchCont{
+    .el-select{width: 28%;}
+    .el-input__inner{border-radius: 4px 0 0 4px;border: 0;}
 }
-.el-checkbox__label{color: #fff;
-border-radius: 5px;
-padding: 5px 10px;}
-.el-checkbox{width:100%;}
-.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
-    background-color: #fff;
-    border-color: $C1075aa;
-    
-}
-.el-checkbox__input.is-checked+.el-checkbox__label{color: #fff;}
-.el-checkbox__inner::after{
-    border: 2px solid $C1075aa;
-    border-left: 0;
-    border-top: 0;
-    height: 12px;
-    width: 5px;
-    left:12px;
-    top: 6px;
-}
-
-// .el-radio__input{float: right;}
-// .el-radio__input.is-checked .el-radio__inner{background-color: #fff;border-color: $C1075aa;}
-// .el-radio__inner::after{border: 2px solid $C1075aa;
-//     border-left: 0;
-//     border-top: 0;
-//     height: 12px;
-//     width: 5px;
-//     left:12px;
-//     top: 6px;}

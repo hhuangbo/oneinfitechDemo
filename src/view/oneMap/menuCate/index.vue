@@ -20,7 +20,9 @@
                         <menuType1 :data="item.level" :mType="item.type"/>
                     </div>
                     <div v-else> -->
-                        <li v-for="(items,indexs) in item.level" :class="[active2 ==indexs   ? 'li2 isOpened2' :'li2']">
+                        <menuSearch v-if="item.type == 3 || item.type ==4"></menuSearch>
+                        <li v-for="(items,indexs) in item.level" 
+                            :class="[active2 ==indexs   ? 'li2 isOpened2' :'li2']">
                             <div class="menuItem"  @click="setTegel2(items,item.type,indexs)">
                                 <span>{{items.title}}</span>
                                 <span v-if="items.count">{{items.count}}</span>
@@ -40,10 +42,12 @@
 <script>
 import menuType1 from './menuType1'
 import menuType2 from './menuTyp2'
+import menuSearch from './menu_search'
 export default {
     components:{
         menuType1,
-        menuType2
+        menuType2,
+        menuSearch
     },
     data() {
         return {
@@ -89,6 +93,8 @@ export default {
             this.active2 = this.active2 == index?-1:index
             this.$store.commit('set_wareDataInfo',{})
             this.$store.commit('set_menuActive',this.active1);
+            console.log(items,type)
+            this.$store.commit('set_searchTermData',items);
             if(type=='2'){//收获地址
                 this.$parent.Level2Data(items)
             }
@@ -102,9 +108,12 @@ export default {
         set_level3Data(data){
             this.$parent.level3Data(data)
         },
-        set_serviceCompValue(data){//服务订单
+        set_serviceCompValue(data){//交付轨迹
             this.$parent.simplifierInit(data)
         },
+        set_orderInfoVal(data){//订单信息
+            this.$parent.orderInfoVal(data)
+        }
     }
 };
 </script>

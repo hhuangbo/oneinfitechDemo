@@ -20,7 +20,10 @@
                         <menuType1 :data="item.level" :mType="item.type"/>
                     </div>
                     <div v-else> -->
-                        <menuSearch v-if="item.type == 3 || item.type ==4"></menuSearch>
+                        <menuSearch v-if="item.type == 3 || item.type ==4" :searchMenuData="item.level" @searchResult="searchResult"></menuSearch>
+                        <!-- <li  v-if="searchRData.length > 0" class="a"
+                            v-for="(item,index) in searchRData">{{item[index]}}</li>
+                            <div v-else> -->
                         <li v-for="(items,indexs) in item.level" 
                             :class="[active2 ==indexs   ? 'li2 isOpened2' :'li2']">
                             <div class="menuItem"  @click="setTegel2(items,item.type,indexs)">
@@ -30,6 +33,7 @@
                             <menuType1  v-if="items.info&&(active2 == indexs)&& (item.type==1 || item.type==3)" :data="items.info" :mType="item"/>
                             <menuType2 v-if="items.info&&(active2 == indexs)&&item.type==2" :data="items.info" />
                         </li>
+                        <!-- </div> -->
                     <!-- </div> -->
                 </ul>
             <!-- </transition> -->
@@ -43,6 +47,8 @@
 import menuType1 from './menuType1'
 import menuType2 from './menuTyp2'
 import menuSearch from './menu_search'
+
+import {mapGetters} from 'vuex'
 export default {
     components:{
         menuType1,
@@ -53,17 +59,22 @@ export default {
         return {
             menuList: [],
             active1:0,
-            active2:-1
+            active2:-1,
+            searchRData:[],
         };
     },
+    computed:{
+        ...mapGetters(['set_menuInit'])
+    },
     mounted() {
+        this.$store.dispatch("menuInit"); //注册号
         this.init();
     },
     methods:{
         init() {
             //初始控制台
             var _this = this;
-            
+            console.log(_this.get_menuInit)
             this.$http.get("../../static/json/menuCate.json")
                 .then(res => {
                 this.menuList = res.data.menuList;
@@ -81,9 +92,7 @@ export default {
             this.$store.commit('set_wareDataInfo',{});
             this.$store.commit('set_menuActive',this.active1);
             if(item.type=='2' && item.title=='收货地址'){//收获地址
-                // if( this.active1==1 && item.level){
-                    this.$parent.secondLevelData(item,this.active1)
-                // }
+                this.$parent.secondLevelData(item,this.active1)
             }
             if(item.type=='3' && item.title=='干线路线'){
                 this.$parent.trunkLineInit(item)
@@ -93,8 +102,8 @@ export default {
             this.active2 = this.active2 == index?-1:index
             this.$store.commit('set_wareDataInfo',{})
             this.$store.commit('set_menuActive',this.active1);
-            console.log(items,type)
-            this.$store.commit('set_searchTermData',items);
+            this.$store.commit('set_searchTermData',items)
+            this.$store.commit('set_parentLevel',type);
             if(type=='2'){//收获地址
                 this.$parent.Level2Data(items)
             }
@@ -111,8 +120,9 @@ export default {
         set_serviceCompValue(data){//交付轨迹
             this.$parent.simplifierInit(data)
         },
-        set_orderInfoVal(data){//订单信息
-            this.$parent.orderInfoVal(data)
+        searchResult(val){
+            console.log('哈哈哈',val)
+            this.searchRData.push(val)
         }
     }
 };

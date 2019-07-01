@@ -1,14 +1,15 @@
 <template>
     <div class="searchTerm">
         <el-tag
-            v-for="tag in searchTermData"
-            :key="tag"
+            v-for="(tag,index) in searchTermData"
+            :key="index"
             closable
             :disable-transitions="false"
             color="#fff"
             @close="handleClose(tag)">
             {{tag.title}}
         </el-tag>
+
     </div>
 </template>
 
@@ -33,8 +34,8 @@ export default {
     methods:{
         handleClose(item){
             this.$store.commit('removeTerm',item)
-            // this.term.splice(this.term.indexOf(item), 1);
-        }
+        },
+        
     }
 }
 </script>
@@ -43,7 +44,7 @@ export default {
 .searchTerm{
     position: absolute;
     top: 50px;
-    left: 18%;
+    left: 22%;
     span{margin: 5px;}
 }
 </style>

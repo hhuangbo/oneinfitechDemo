@@ -215,7 +215,7 @@
                             "infoTips":{"EAT":"2019/4/22 18:00:00","ATA":"","ETD":"","ATD":""}},
                         {"type":"2","title":"订单信息"},
                         {"type":"3","title":"EPOD"},
-                        {"type":"3","title":"客户评价"}
+                        {"type":"4","title":"客户评价"}
                     ]
                 },
                 {
@@ -225,7 +225,7 @@
                             "infoTips":{"EAT":"","ATA":"","ETD":"","ATD":""}},
                         {"type":"2","title":"订单信息"},
                         {"type":"3","title":"EPOD"},
-                        {"type":"3","title":"客户评价"}
+                        {"type":"4","title":"客户评价"}
                     ]
                 },
                 {
@@ -235,7 +235,7 @@
                             "infoTips":{"EAT":"","ATA":"","ETD":"","ATD":""}},
                         {"type":"2","title":"订单信息"},
                         {"type":"3","title":"EPOD"},
-                        {"type":"3","title":"客户评价"}
+                        {"type":"4","title":"客户评价"}
                     ]
                 },
                 {
@@ -245,7 +245,7 @@
                             "infoTips":{"EAT":"","ATA":"","ETD":"","ATD":""}},
                         {"type":"2","title":"订单信息"},
                         {"type":"3","title":"EPOD"},
-                        {"type":"3","title":"客户评价"}
+                        {"type":"4","title":"客户评价"}
                     ]
                 },
                 {
@@ -255,7 +255,7 @@
                             "infoTips":{"EAT":"","ATA":"","ETD":"","ATD":""}},
                         {"type":"2","title":"订单信息"},
                         {"type":"3","title":"EPOD"},
-                        {"type":"3","title":"客户评价"}
+                        {"type":"4","title":"客户评价"}
                     ]
                 }
             ]

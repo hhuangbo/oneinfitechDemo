@@ -42,13 +42,13 @@ export default {
         }
     },
     methods:{
-        searchEvent(){//传递多个参数？？？？
+        searchEvent(){
             //查询成功跳转到map页面
-            this.$router.push({name:'oneMap',params:{selectType:this.selectValue,searchVal:this.searchVal}});
+            this.$router.push({path:'oneMap',query:{selectType:this.selectValue,searchVal:this.searchVal}});
         },
         handlehotSearch(item){
             this.searchVal=item
-            this.$router.push({name:'oneMap',params:{selectType:this.selectValue,searchVal:this.searchVal}});
+            this.$router.push({path:'oneMap',query:{selectType:this.selectValue,searchVal:this.searchVal}});
         }
     }
 }

@@ -4,15 +4,15 @@
         <menuCate ></menuCate>
         <!-- <transition > -->
             <!--仓库照片弹框-->
-            <photoInfo :dataInfo="wareDataInfo"  :class="[wareDataInfo.type ==1 || wareDataInfo.type==3 ? 'animated fadeIn' : 'animated fadeOut' ]" v-if="wareDataInfo && wareDataInfo.type==1 || wareDataInfo.type==3"/>
+            <photoInfo :dataInfo="wareDataInfo"  :class="[wareDataInfo.type ==1 || wareDataInfo.type==3 ? 'animated fadeIn' : 'animated fadeOut' ]" v-if=" wareDataInfo && wareDataInfo.type==1 || wareDataInfo.type==3"/>
             <!--仓库基本信息弹框-->
             <warehInfo :dataInfo="wareDataInfo"  :class="[wareDataInfo && wareDataInfo.type==2 ? 'animated fadeInRight' : 'animated fadeOutRight']" v-if="wareDataInfo && wareDataInfo.type==2"/>
             <!--门店信息弹框-->
             <storehouseInfo :dataInfo="storeInfoData" v-if="storeCheck" />
             <!--搜索条件-->
             <searchTerm class="animated fadeInRight" />
-            <detailList class="animated fadeInRight" :data="orderInfoData" v-if="orderInfoShow"/>
-            <customerEva class="animated fadeInRight"/>
+            <detailList class="animated fadeInRight" :data="orderInfoData" v-if="serviceOrderData.type==2"/>
+            <customerEva class="animated fadeInRight" :data="customerEvaData" v-if="serviceOrderData.type==4"/>
             
         <!-- </transition> -->
         <div id="panel"></div>
@@ -36,8 +36,7 @@ export default {
     },
     data(){
         return{
-            orderInfoData:[],
-            orderInfoShow:false,
+            serviceOrderData:[],
             opts:{
     			pointArr:[],//判定点是否在花圈的形状中的参数
     			geoc:null,//经纬度解析地址
@@ -102,14 +101,15 @@ export default {
     methods:{
         mapInit(){//初始创建地图
             let _this=this;
-            console.log('搜索的关键字：',_this.$route.params.searchVal)
+            
+            console.log('搜索的关键字：',_this.$route.query)
             this.map=new AMap.Map('container',{
                 zoom:_this.mapData.zoom, 
                 zooms:_this.mapData.zooms, 
                 center: _this.mapData.center,
                 resizeEnable: _this.mapData.resizeEnable,//自适应大小
                 viewMode: '2D'
-            })        
+            })    
         },
         secondLevelData(data,act){//左侧菜单点击取值 子组件1
             this.map.clearMap()
@@ -202,7 +202,7 @@ export default {
                         var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
                         _this.eject_addressInfo(areaData)
                     });
-                    AMap.event.addListener(marker,'mouseover',(e)=>{                  
+                    AMap.event.addListener(marker,'mouseover',(e)=>{//缩放问题            
                         var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
                         _this.showBoundsInfo(areaData)
                     });
@@ -310,58 +310,78 @@ export default {
             }
         },
         orderInfoVal(data){//订单信息
-            this.orderInfoShow=true
             this.orderInfoData=data
         },
+        customerEvaVal(data){//客户评价
+            this.customerEvaData=data
+        },
         simplifierInit(data){//交付轨迹 服务订单 
-            var _this=this;
-            _this.map.clearMap()
-            _this.map.plugin(["AMap.TruckDriving"],function() {
-                var truckDriving = new AMap.TruckDriving({
-                    policy: 0, // 规划策略
-                    size: 1, // 车型大小
-                    width: 2.5, // 宽度
-                    height: 2, // 高度      
-                    load: 1, // 载重
-                    weight: 12, // 自重
-                    axlesNum: 2, // 轴数
-                    province: '京', // 车辆牌照省份
-                })
-                // 根据起终点经纬度规划驾车导航路线
-                var path=[]
-                path.push({lnglat:[data.path[0]]});//起点
-                // var pathLine=data.path//途径
-                // for(var i=1;i<pathLine.length-1;i++){
-                //     path.push({lnglat:[pathLine[i]]})
-                    
-                //     _this.TruckDMarker.endMarker2 = new AMap.Marker({//终点
-                //         position: pathLine[i],
-                //         size: _this.iconSize,
-                //         icon: require('../../assets/difineDir2.png'),
-                //         offset: new AMap.Pixel(-13, -20),
-                //         map: _this.map
-                //     })
-                //     _this.TruckDMarker.endMarker2.setLabel({
-                //         offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
-                //         content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                //         direction: 'right', //设置文本标注方位
-                //     });
-                // }
-                // path.push({lnglat:[121.396582,31.245129]});//途径
-                // path.push({lnglat:[121.544897,31.219882]});//途径
-                path.push({lnglat:[data.path[data.path.length-1]]});//终点
+            if(data.type=='1'){//交付轨迹
+                var _this=this;
+                _this.map.clearMap()
+                _this.map.plugin(["AMap.TruckDriving"],function() {
+                    var truckDriving = new AMap.TruckDriving({
+                        // policy: 0, // 规划策略
+                        // size: 1, // 车型大小
+                        // strategy: 10,//驾车选择策略 路线条数有关
+                        // width: 2.5, // 宽度
+                        // height: 2, // 高度      
+                        // load: 1, // 载重
+                        // weight: 12, // 自重
+                        // axlesNum: 2, // 轴数
+                        // province: '沪', // 车辆牌照省份
 
-                truckDriving.search(path, function(status, result) {
-                    if (status === 'complete') {
-                        console.log('绘制货车路线完成')
-                        if (result.routes && result.routes.length) {
-                            _this.drawRoute(result.routes[0]);//路线 
+                        width: 2.5,
+                        size: 2,
+                        weight: 10,
+                        axis: 2,
+                        height: 1.6,
+                        load: 0.9,
+                        strategy: 5,
+                    })
+                    // 根据起终点经纬度规划驾车导航路线
+                    var path=[]
+                    path.push({lnglat:[data.path[0]]});//起点
+                    // var pathLine=data.path//途径
+                    // for(var i=1;i<pathLine.length-1;i++){
+                    //     path.push({lnglat:[pathLine[i]]})
+                        
+                    //     _this.TruckDMarker.endMarker2 = new AMap.Marker({//终点
+                    //         position: pathLine[i],
+                    //         size: _this.iconSize,
+                    //         icon: require('../../assets/difineDir2.png'),
+                    //         offset: new AMap.Pixel(-13, -20),
+                    //         map: _this.map
+                    //     })
+                    //     _this.TruckDMarker.endMarker2.setLabel({
+                    //         offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                    //         content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                    //         direction: 'right', //设置文本标注方位
+                    //     });
+                    // }
+                    // path.push({lnglat:[121.396582,31.245129]});//途径
+                    // path.push({lnglat:[121.544897,31.219882]});//途径
+                    path.push({lnglat:[data.path[data.path.length-1]]});//终点
+
+                    
+                    // path.push({lnglat:[116.481008,39.989625]});//途径
+                    // path.push({lnglat:[116.414217,40.061741]});//途径
+
+                    truckDriving.search(path, function(status, result) {
+                        if (status === 'complete') {
+                            console.log('绘制货车路线完成')
+                            console.log(result)
+                            if (result.routes && result.routes.length) {
+                                _this.drawRoute(result.routes[0]);//路线 
+                            }
+                        } else {
+                            console.log('获取货车数据失败：' + result)
                         }
-                    } else {
-                        console.log('获取货车数据失败：' + result)
-                    }
-                });
-            })
+                    });
+                })
+            }else{//客户评价
+                this.serviceOrderData=data
+            }
         },
         set_initPage(orderData,PathSimplifier) {
             var _this=this;

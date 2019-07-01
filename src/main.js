@@ -16,6 +16,9 @@ import './common/css/global.scss'
 import AMap from 'vue-amap'
 Vue.use(AMap)
 
+import util from './common/js/util.js'
+Vue.prototype.util=util
+
 import axios from 'axios'
 Vue.prototype.$http = axios
 Vue.use(ElementUI);

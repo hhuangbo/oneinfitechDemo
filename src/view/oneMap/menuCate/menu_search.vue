@@ -61,12 +61,14 @@ export default {
     },
     methods:{
         init(){
-            for(var i = 0; i< this.searchMenuData.length; i++){
-                this.searchMData.push(this.searchMenuData[i].title)
-            }
+            console.log( this.searchMenuData)
+            // for(var i = 0; i< this.searchMenuData.length; i++){
+                
+            //     this.searchMData.push(this.searchMenuData[i].title)
+            // }
         },
         searchOrder(){
-            var get_searchResult=this.util.fuzzyQuery(this.searchMData,this.searchV)
+            var get_searchResult=this.util.fuzzyQuery(this.searchMenuData,this.searchV)
             this.$emit('searchResult',get_searchResult)
             // console.log(get_searchResult)
         },

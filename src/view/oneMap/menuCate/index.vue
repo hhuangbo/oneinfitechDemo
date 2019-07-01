@@ -22,11 +22,13 @@
                     <div v-else> -->
                         <menuSearch v-if="item.type == 3 || item.type ==4" :searchMenuData="item.level" @searchResult="searchResult"></menuSearch>
                         <!-- <li  v-if="searchRData.length > 0" class="a"
-                            v-for="(item,index) in searchRData">{{item[index]}}</li>
-                            <div v-else> -->
-                        <li v-for="(items,indexs) in item.level" 
+                            v-for="(item,index) in searchRData">{{item[index]}}</li> -->
+                            <!-- <div > -->
+                        <!-- <li v-for="(items,indexs) in item.level"  -->
+                        <li v-for="(items,indexs) in itemlevel" 
                             :class="[active2 ==indexs   ? 'li2 isOpened2' :'li2']">
                             <div class="menuItem"  @click="setTegel2(items,item.type,indexs)">
+                                <!-- <span>{{items}}</span> -->
                                 <span>{{items.title}}</span>
                                 <span v-if="items.count">{{items.count}}</span>
                             </div> 
@@ -61,13 +63,25 @@ export default {
             active1:0,
             active2:-1,
             searchRData:[],
+
+            itemlevel:[]
         };
     },
+    watch:{
+        // searchResult(data){
+        //     this.searchRData.push(data)
+        //     this.itemlevel=data
+        //     console.log('哈哈哈哈哈',this.itemlevel)
+        // }
+    },
     computed:{
-        ...mapGetters(['set_menuInit'])
+        ...mapGetters(['set_menuInit']),
+        // itemlevel(){
+        //     return this.menuList.level
+        // }
     },
     mounted() {
-        this.$store.dispatch("menuInit"); //注册号
+        this.$store.dispatch("get_menuInit"); //注册号
         this.init();
     },
     methods:{
@@ -89,6 +103,8 @@ export default {
             this.active1 = this.active1 == index?-1:index
             this.active2 = -1;
             
+            this.itemlevel=item.level
+
             this.$store.commit('set_wareDataInfo',{});
             this.$store.commit('set_menuActive',this.active1);
             if(item.type=='2' && item.title=='收货地址'){//收获地址
@@ -121,8 +137,10 @@ export default {
             this.$parent.simplifierInit(data)
         },
         searchResult(val){
-            console.log('哈哈哈',val)
-            this.searchRData.push(val)
+            // this.searchRData=val
+            // console.log('哈哈哈',this.searchRData)
+            this.itemlevel=val
+            console.log('哈哈哈哈哈',this.itemlevel)
         }
     }
 };

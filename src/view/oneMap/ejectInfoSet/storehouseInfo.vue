@@ -101,7 +101,7 @@ export default {
 <style lang="scss" scoped>
 .storehouse{
     background-color: $C0d0e0f;
-    width: 25%;
+    width: 28%;
     position: absolute;
     right: 0;
     top: 50px;

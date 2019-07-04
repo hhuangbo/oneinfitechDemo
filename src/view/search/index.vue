@@ -3,14 +3,14 @@
         <div class="serContent">            
             <h3 class="">ONEINFITECH</h3>
             <div class="searchCont">
-                <el-select v-model="selectValue" placeholder="请选择">
+                <!-- <el-select v-model="selectValue" placeholder="请选择">
                     <el-option
                     v-for="item in options"
                     :key="item.value"
                     :label="item.value"
                     :value="item.value">
                     </el-option>
-                </el-select>
+                </el-select> -->
                 <input class="searchInp" type="text"  autofocus="autofocus" v-model.trim="searchVal" @keyup.enter="searchEvent"/>
                 <button class="btnsearch" @click="searchEvent">搜索</button>
             </div>
@@ -67,7 +67,7 @@ export default {
         letter-spacing: 4px;
         color: $C0a2c9a; 
         font-style: italic;
-        font-size: 36px;
+        font-size: 40px;
         font-weight: 600;
         padding: 5px 0;
     }
@@ -89,7 +89,8 @@ export default {
     padding: 10px 8px;
     border-radius: 5px;    
     border-left: 1px solid #f3e6e6;
-    border-radius: 0 4px 4px 0;
+    border-radius: 4px;
+    // border-radius: 0 4px 4px 0;
 }
 .btnsearch{
     width: 15%;

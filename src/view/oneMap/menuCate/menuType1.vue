@@ -27,11 +27,12 @@ export default {
         handleSelected(item,index,mType){
             this.ischecked=index
             switch(mType.type){
-                case '1'://仓库信息
+                case '4'://仓库信息
                     this.$store.commit('set_wareDataInfo',item)
                     break;
-                case '3'://服务订单
-                    this.$parent.set_serviceCompValue(item)
+                case '6'://服务订单
+                    // this.$parent.set_serviceCompVal(item)
+                    this.$store.commit('set_serviceCompVal',item)
                     break;
             }
         }

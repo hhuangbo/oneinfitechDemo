@@ -1,7 +1,7 @@
 <template>
     <!-- 组件--普通列表 -->
     <ul class="tempMenu2">
-        <li v-for="item in data" @click="level3Data(item)"><span>{{item.title}}</span><span>{{item.count}}</span></li>
+        <li v-for="item in data" @click="level3Data(item)"><span>{{item.title}}</span><span>{{item.addressInfo.length}}</span></li>
     </ul>
 </template>
 
@@ -15,7 +15,8 @@ export default {
     },
     methods:{
         level3Data(data){
-            this.$parent.set_level3Data(data)
+            // this.$parent.set_level3Data(data)
+            this.$store.commit('set_level3Data',data)
         }
     }
 }

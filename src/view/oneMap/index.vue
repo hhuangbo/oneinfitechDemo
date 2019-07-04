@@ -4,15 +4,23 @@
         <menuCate ></menuCate>
         <!-- <transition > -->
             <!--仓库照片弹框-->
-            <photoInfo :dataInfo="wareDataInfo"  :class="[wareDataInfo.type ==1 || wareDataInfo.type==3 ? 'animated fadeIn' : 'animated fadeOut' ]" v-if=" wareDataInfo && wareDataInfo.type==1 || wareDataInfo.type==3"/>
+            <photoInfo :dataInfo="wareDataInfo"  
+            :class="[wareDataInfo.level_type ==1 || wareDataInfo.level_type==3 ? 'animated fadeIn' : 'animated fadeOut' ]" 
+            v-if=" wareDataInfo && wareDataInfo.level_type==1 || wareDataInfo.level_type==3"/>
             <!--仓库基本信息弹框-->
-            <warehInfo :dataInfo="wareDataInfo"  :class="[wareDataInfo && wareDataInfo.type==2 ? 'animated fadeInRight' : 'animated fadeOutRight']" v-if="wareDataInfo && wareDataInfo.type==2"/>
+            <warehInfo :dataInfo="wareDataInfo"  
+            :class="[wareDataInfo && wareDataInfo.level_type==2 ? 'animated fadeInRight' : 'animated fadeOutRight']" 
+            v-if="wareDataInfo && wareDataInfo.level_type==2"/>
             <!--门店信息弹框-->
             <storehouseInfo :dataInfo="storeInfoData" v-if="storeCheck" />
             <!--搜索条件-->
-            <searchTerm class="animated fadeInRight" />
-            <detailList class="animated fadeInRight" :data="orderInfoData" v-if="serviceOrderData.type==2"/>
-            <customerEva class="animated fadeInRight" :data="customerEvaData" v-if="serviceOrderData.type==4"/>
+            <searchTerm />
+            <detailList :data="serviceCompVal"  
+            :class="[serviceCompVal && serviceCompVal.level_type==2 ? 'animated fadeInRight': 'animated fadeOutRight']" 
+            v-if="serviceCompVal && serviceCompVal.level_type==2"/>
+            <customerEva :data="serviceCompVal" 
+            :class="[serviceCompVal && serviceCompVal.level_type==4 ?  'animated fadeInRight': 'animated fadeOutRight']"             
+            v-if="serviceCompVal && serviceCompVal.level_type==4"/>
             
         <!-- </transition> -->
         <div id="panel"></div>
@@ -36,6 +44,7 @@ export default {
     },
     data(){
         return{
+            // orderInfoData:[],customerEvaData:[],
             serviceOrderData:[],
             opts:{
     			pointArr:[],//判定点是否在花圈的形状中的参数
@@ -75,11 +84,14 @@ export default {
     computed:{
         ...mapGetters([
             'menuActive',
+            'level3Data',
             'wareDataInfo',//仓库地址
+            'serviceCompVal'//服务订单
         ])
     },
     watch:{
-        menuActive(data){
+        menuActive(data){ //选取菜单展开的索引
+            this.storeCheck=false
             if(data==2){//收货地址
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([]);};
                 this.routeTruckMarker('');//清空干线路线的marker
@@ -88,6 +100,12 @@ export default {
                 this.map.clearMap();
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([])}
             }
+        },
+        level3Data(data){
+            this.setlevel3Data(data)
+        },
+        serviceCompVal(data){
+            this.simplifierInit(data)
         }
     },
     mounted(){
@@ -95,13 +113,13 @@ export default {
         that.mapInit();
          //添加监听时间，当前缩放级别
         AMap.event.addListener(that.map,'zoomend',function(){
-            that._onZoomEnd()
+            that._onZoomEnd();
+            that.storeCheck=false
         });
     },
     methods:{
         mapInit(){//初始创建地图
-            let _this=this;
-            
+            let _this=this;            
             console.log('搜索的关键字：',_this.$route.query)
             this.map=new AMap.Map('container',{
                 zoom:_this.mapData.zoom, 
@@ -112,19 +130,19 @@ export default {
             })    
         },
         secondLevelData(data,act){//左侧菜单点击取值 子组件1
-            this.map.clearMap()
+            // this.map.clearMap()
             if(data){
-                this.map.setZoomAndCenter(5,[106.259411,37.072703]);
+                // this.map.setZoomAndCenter(5,[106.259411,37.072703]);
                 this.province(data.level)
                 localStorage.setItem('provinceData',JSON.stringify(data.level)) 
             }
         },
         Level2Data(data){//左侧菜单点击取值 子组件2级
-            this.map.setZoomAndCenter(9,[data.info[0].lng,data.info[0].lat]);//地图层级及中心位置
+            // this.map.setZoomAndCenter(9,[data.info[0].lng,data.info[0].lat]);//地图层级及中心位置
             if(data){this.cityInit(data.info)}
         },
-        level3Data(data){
-            this.map.setZoomAndCenter(11,[data.addressInfo[0].lng,data.addressInfo[0].lat]);//设置地图层级
+        setlevel3Data(data){
+            // this.map.setZoomAndCenter(11,[data.addressInfo[0].lng,data.addressInfo[0].lat]);//设置地图层级
             if(data.addressInfo){this.areaInit(data.addressInfo)}
         },
         province(data){////省
@@ -166,7 +184,7 @@ export default {
                         content: `<div style="background-color: rgba(16, 117, 170, 0.8); 
                             height: 50px;line-height:50px; width: 50px; text-align:center;border: 1px solid hsl(180, 100%, 40%); 
                             border-radius: 50%; box-shadow: hsl(180, 100%, 50%) 0px 0px 1px;color:#fff" >                            
-                            ${data[i].count}</div>`,
+                            ${data[i].addressInfo.length}</div>`,
                         offset: new AMap.Pixel(-20,-30)//点标记显示位置偏移量
                     });
                     this.markersTwo.push(marker);
@@ -179,7 +197,7 @@ export default {
                 }
             }
         },
-        areaInit(data){//区 difineDir2
+        areaInit(data){//区 
             var _this=this;_this.map.remove(this.markersTwo)//清除点聚合 
             localStorage.setItem('areaData',JSON.stringify(data))  
             if(data.addressInfo){
@@ -202,7 +220,7 @@ export default {
                         var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
                         _this.eject_addressInfo(areaData)
                     });
-                    AMap.event.addListener(marker,'mouseover',(e)=>{//缩放问题            
+                    AMap.event.addListener(marker,'mouseover',(e)=>{          
                         var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
                         _this.showBoundsInfo(areaData)
                     });
@@ -243,7 +261,7 @@ export default {
                     [113.425982,34.72778],
                     [116.415312,39.852138]
                     ]};
-                _this.simplifierInit(lineArr)
+                _this.truckDrivingData(lineArr)
                     // 绘制轨迹
                 // var polyline = new AMap.Polyline({
                 //     map: _this.map,
@@ -309,76 +327,10 @@ export default {
                 })
             }
         },
-        orderInfoVal(data){//订单信息
-            this.orderInfoData=data
-        },
-        customerEvaVal(data){//客户评价
-            this.customerEvaData=data
-        },
         simplifierInit(data){//交付轨迹 服务订单 
-            if(data.type=='1'){//交付轨迹
-                var _this=this;
-                _this.map.clearMap()
-                _this.map.plugin(["AMap.TruckDriving"],function() {
-                    var truckDriving = new AMap.TruckDriving({
-                        // policy: 0, // 规划策略
-                        // size: 1, // 车型大小
-                        // strategy: 10,//驾车选择策略 路线条数有关
-                        // width: 2.5, // 宽度
-                        // height: 2, // 高度      
-                        // load: 1, // 载重
-                        // weight: 12, // 自重
-                        // axlesNum: 2, // 轴数
-                        // province: '沪', // 车辆牌照省份
-
-                        width: 2.5,
-                        size: 2,
-                        weight: 10,
-                        axis: 2,
-                        height: 1.6,
-                        load: 0.9,
-                        strategy: 5,
-                    })
-                    // 根据起终点经纬度规划驾车导航路线
-                    var path=[]
-                    path.push({lnglat:[data.path[0]]});//起点
-                    // var pathLine=data.path//途径
-                    // for(var i=1;i<pathLine.length-1;i++){
-                    //     path.push({lnglat:[pathLine[i]]})
-                        
-                    //     _this.TruckDMarker.endMarker2 = new AMap.Marker({//终点
-                    //         position: pathLine[i],
-                    //         size: _this.iconSize,
-                    //         icon: require('../../assets/difineDir2.png'),
-                    //         offset: new AMap.Pixel(-13, -20),
-                    //         map: _this.map
-                    //     })
-                    //     _this.TruckDMarker.endMarker2.setLabel({
-                    //         offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
-                    //         content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                    //         direction: 'right', //设置文本标注方位
-                    //     });
-                    // }
-                    // path.push({lnglat:[121.396582,31.245129]});//途径
-                    // path.push({lnglat:[121.544897,31.219882]});//途径
-                    path.push({lnglat:[data.path[data.path.length-1]]});//终点
-
-                    
-                    // path.push({lnglat:[116.481008,39.989625]});//途径
-                    // path.push({lnglat:[116.414217,40.061741]});//途径
-
-                    truckDriving.search(path, function(status, result) {
-                        if (status === 'complete') {
-                            console.log('绘制货车路线完成')
-                            console.log(result)
-                            if (result.routes && result.routes.length) {
-                                _this.drawRoute(result.routes[0]);//路线 
-                            }
-                        } else {
-                            console.log('获取货车数据失败：' + result)
-                        }
-                    });
-                })
+           
+            if(data.level_type=='1'){//交付轨迹
+                this.truckDrivingData(data)
             }else{//客户评价
                 this.serviceOrderData=data
             }
@@ -417,6 +369,70 @@ export default {
                 console.log(err)
             })
         },
+        truckDrivingData(data){
+            var _this=this;
+            _this.map.clearMap()
+            _this.map.plugin(["AMap.TruckDriving"],function() {
+                var truckDriving = new AMap.TruckDriving({
+                    // policy: 0, // 规划策略
+                    // size: 1, // 车型大小
+                    // strategy: 10,//驾车选择策略 路线条数有关
+                    // width: 2.5, // 宽度
+                    // height: 2, // 高度      
+                    // load: 1, // 载重
+                    // weight: 12, // 自重
+                    // axlesNum: 2, // 轴数
+                    // province: '沪', // 车辆牌照省份
+
+                    width: 2.5,
+                    size: 2,
+                    weight: 10,
+                    axis: 2,
+                    height: 1.6,
+                    load: 0.9,
+                    strategy: 5,
+                })
+                // 根据起终点经纬度规划驾车导航路线
+                var path=[]
+                path.push({lnglat:[data.path[0]]});//起点
+                // var pathLine=data.path//途径
+                // for(var i=1;i<pathLine.length-1;i++){
+                //     path.push({lnglat:[pathLine[i]]})
+                    
+                //     _this.TruckDMarker.endMarker2 = new AMap.Marker({//终点
+                //         position: pathLine[i],
+                //         size: _this.iconSize,
+                //         icon: require('../../assets/difineDir2.png'),
+                //         offset: new AMap.Pixel(-13, -20),
+                //         map: _this.map
+                //     })
+                //     _this.TruckDMarker.endMarker2.setLabel({
+                //         offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                //         content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                //         direction: 'right', //设置文本标注方位
+                //     });
+                // }
+                // path.push({lnglat:[121.396582,31.245129]});//途径
+                // path.push({lnglat:[121.544897,31.219882]});//途径
+                path.push({lnglat:[data.path[data.path.length-1]]});//终点
+
+                
+                // path.push({lnglat:[116.481008,39.989625]});//途径
+                // path.push({lnglat:[116.414217,40.061741]});//途径
+
+                truckDriving.search(path, function(status, result) {
+                    if (status === 'complete') {
+                        console.log('绘制货车路线完成')
+                        console.log(result)
+                        if (result.routes && result.routes.length) {
+                            _this.drawRoute(result.routes[0]);//路线 
+                        }
+                    } else {
+                        console.log('获取货车数据失败：' + result)
+                    }
+                });
+            })
+        },
         routeTruckMarker(routePath){
             var _this=this;
             if(routePath==''){_this.map.remove(_this.TruckDMarker.startMarker); return;}
@@ -446,7 +462,7 @@ export default {
                 map: _this.map,
                 position: path[0],
                 size: (10,10),
-                icon:  require('../../assets/car.png'),//"https://webapi.amap.com/images/car.png",//
+                icon:  require('../../assets/car.png'),
                 offset: new AMap.Pixel(-26, -13),
                 autoRotation: true,
                 angle:-90,
@@ -520,6 +536,7 @@ export default {
                 var bounds=result.districtList[0].boundaries;
                 if(bounds){
                     for (var i = 0, l = bounds.length; i < l; i++) {
+                        
                         //生成行政区划polygon
                         var polygon = new AMap.Polygon({
                             strokeWeight: 1,
@@ -532,7 +549,7 @@ export default {
                     }
                 }
                 _this.map.add(_this.drawbounds.polygons)
-                _this.map.setFitView(_this.drawbounds.polygons);//视口自适应
+                // _this.map.setFitView(_this.drawbounds.polygons);//视口自适应
             })
         },
         _onZoomEnd(){//监听地图缩放

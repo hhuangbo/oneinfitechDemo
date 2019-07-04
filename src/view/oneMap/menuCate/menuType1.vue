@@ -21,9 +21,15 @@ export default {
         }
     },
     mounted(){
-
+        this.init()
     },
     methods:{
+        init(){
+            if(this.mType.type==6){//服务订单
+                this.ischecked=0;
+                this.$store.commit('set_serviceCompVal',this.data[0])
+            }
+        },
         handleSelected(item,index,mType){
             this.ischecked=index
             switch(mType.type){

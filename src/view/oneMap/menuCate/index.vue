@@ -9,6 +9,10 @@
                 </span>
                     <el-collapse-transition>
                     <div class="ul2 " v-if="item.level&&(active1 == index)">
+                            <div v-if="item.type == 3 || item.type ==4|| item.type ==5"
+                            class="pca-screen"><span v-for="(pca,ind) in PCAData" 
+                            @click="pcaScreen(ind)" :class="pcaScreen_act==ind ? 'pcaScreen_act' : ''">{{pca}}</span></div>
+
                             <menuSearch v-if="item.type == 6 || item.type ==8|| item.type ==9" :searchMenuData="item.level" @searchResult="searchResult"></menuSearch>
                             <transition-group
                             name="staggered-fade" 
@@ -60,10 +64,11 @@ export default {
             active1:0,
             active2:-1,
             searchRData:[],
-            
+            PCAData:['区域','全部'],
             itemlevel:[],
             LinkageActive:-1,
-            paneisShow:true//折叠面板
+            paneisShow:true,//折叠面板
+            pcaScreen_act:-1
         };
     },
     watch:{
@@ -150,6 +155,9 @@ export default {
             this.paneisShow ? this.paneisShow=false : this.paneisShow=true
             this.$store.commit('set_paneisShow',this.paneisShow)
         },
+        pcaScreen(ind){
+            this.pcaScreen_act = this.pcaScreen_act == ind ? -1 : ind;
+        },
 
         beforeEnter: function (el) {
             el.style.opacity = 0
@@ -212,7 +220,7 @@ export default {
 .toggle-button{
     width: 23px;
     height: 48px;
-    background: rgba(255,255,255,0.9) url('../../../assets/togglebtn.png') 7px center/7px 10px no-repeat;
+    background: rgba(255,255,255,0.7) url('../../../assets/togglebtn.png') 7px center/7px 10px no-repeat;
     border-left: 1px solid #f7f7f7;
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);    
     position: absolute;
@@ -238,7 +246,6 @@ li{cursor: pointer;line-height: 34px;}
 }
 .isOpened{
     .menu-name{background-color: $C0d0e0f;color: #fff;}
-    
 }
 .menuItem{display: flex;}
 .li2{height: auto !important;}
@@ -268,6 +275,26 @@ li{cursor: pointer;line-height: 34px;}
     }
     .linkage{background-color:#333;}
 }
+.pca-screen{
+    background-color: #5a5a5a;
+    height: 22px;
+    line-height: 22px;
+    text-align: right;
+    color:  #fff;
+    span{
+        &::after{
+            content: '|';
+            padding:0 5px;
+        }
+        &:last-child{
+            &::after{
+                content: '';
+                padding:0 5px;
+            }
+        }
+    }
+}
+.pcaScreen_act{color:$Cfe6a01;}
 .ul3 .li3 span{
     color: blue
 }

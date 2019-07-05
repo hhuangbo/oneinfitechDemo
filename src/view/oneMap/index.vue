@@ -83,7 +83,7 @@ export default {
         menuActive(data){ //选取菜单展开的索引
             this.storeCheck=false
             // if(data==2){//收货地址
-            if(data==3){//收货地址
+            if(data==3|| data ==9){//收货地址
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([]);};
                 this.routeTruckMarker('');//清空干线路线的marker
                 return;
@@ -129,7 +129,8 @@ export default {
                 case '13':
                     this.trunkLineInit(data)
                     break;
-                case '9':this.infoPopover(data)
+                case '9':
+                    this.infoPopover(data)
                     break;
             }
         },
@@ -238,27 +239,15 @@ export default {
         infoPopover(datas){
             var _this=this;
             let data=datas.level;
-            // _this.map.clearMap();
+            _this.map.clearMap();
             for (var i=0; i < data.length; i ++) {
-            console.log('99999',[data[i].lng,data[i].lat])
-                var marker=new AMap.Marker({
+                console.log('99999',[data[i].lng,data[i].lat])
+                var marker = new AMap.Marker({
                     position: [data[i].lng,data[i].lat],
-                    size: new AMap.Size(20, 20),//_this.iconSize,
                     icon: require('../../assets/cp.png'),
-                    offset: new AMap.Pixel(-13, -30),
-                    map:_this.map,
-                    extData:data[i]
-                }); 
-                // _this.addressMarkers.push(marker);
-                // _this.map.add(marker);
-                // AMap.event.addListener(marker,'mouseover',(e)=>{          
-                //     var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
-                //     _this.showBoundsInfo(areaData)
-                // });
-                // AMap.event.addListener(marker,'mouseout',(e)=>{
-                //     _this.map.remove(_this.drawbounds.polygons)
-                //     _this.drawbounds.polygons=[];
-                // });
+                    map: _this.map
+                });
+                _this.map.setFitView();
             }
         },
         eject_addressInfo(areaData){

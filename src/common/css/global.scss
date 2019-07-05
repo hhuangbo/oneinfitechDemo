@@ -52,6 +52,8 @@ textarea,input{
 span,p,div{
     word-wrap:break-word;
 }
+b{font-weight: 500;} 
+i,em{font-style: normal;}
 .lf{ float:left; }
 .rt{ float:right; }
 .clearfix{ content: ''; display: block; clear: both; }

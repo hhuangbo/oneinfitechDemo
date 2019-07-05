@@ -61,7 +61,7 @@ export default {
     },
     methods:{
         init(){
-            console.log( this.searchMenuData)
+            // console.log( this.searchMenuData)
             // for(var i = 0; i< this.searchMenuData.length; i++){
                 
             //     this.searchMData.push(this.searchMenuData[i].title)

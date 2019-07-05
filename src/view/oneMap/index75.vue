@@ -44,6 +44,14 @@ export default {
         return{
             // orderInfoData:[],customerEvaData:[],
             serviceOrderData:[],
+            opts:{
+    			pointArr:[],//判定点是否在花圈的形状中的参数
+    			geoc:null,//经纬度解析地址
+				bdary:null,//地址获取行政区域
+				ply:[],//行政边界组件
+				choseMark:[],
+                zIndex:1,//覆盖物的层级
+            },
             map:null,//地图实例
             markerClusterer:null,//聚合点对象实例
             mapData:{
@@ -82,8 +90,7 @@ export default {
     watch:{
         menuActive(data){ //选取菜单展开的索引
             this.storeCheck=false
-            // if(data==2){//收货地址
-            if(data==3){//收货地址
+            if(data==2){//收货地址
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([]);};
                 this.routeTruckMarker('');//清空干线路线的marker
                 return;
@@ -107,12 +114,11 @@ export default {
             that._onZoomEnd();
             that.storeCheck=false
         });
-        
     },
     methods:{
         mapInit(){//初始创建地图
             let _this=this;            
-            // console.log('搜索的关键字：',_this.$route.query)
+            console.log('搜索的关键字：',_this.$route.query)
             this.map=new AMap.Map('container',{
                 zoom:_this.mapData.zoom, 
                 zooms:_this.mapData.zooms, 
@@ -121,38 +127,27 @@ export default {
                 viewMode: '2D'
             })    
         },
-        menuClassA(data,active){
-            switch(data.type){
-                case '3':
-                    this.secondLevelData(data,active)
-                    break;
-                case '13':
-                    this.trunkLineInit(data)
-                    break;
-                case '9':this.infoPopover(data)
-                    break;
-            }
-        },
         secondLevelData(data,act){//左侧菜单点击取值 子组件1
             // this.map.clearMap()
-            console.log(data)
             if(data){
+                // this.map.setZoomAndCenter(5,[106.259411,37.072703]);
                 this.province(data.level)
                 localStorage.setItem('provinceData',JSON.stringify(data.level)) 
             }
         },
         Level2Data(data){//左侧菜单点击取值 子组件2级
+            // this.map.setZoomAndCenter(9,[data.info[0].lng,data.info[0].lat]);//地图层级及中心位置
             if(data){this.cityInit(data.info)}
         },
-        setlevel3Data(data){console.log(data)
-            // if(data.addressInfo){this.areaInit(data.addressInfo)}
-            if(data){this.areaInit(data)}
+        setlevel3Data(data){
+            // this.map.setZoomAndCenter(11,[data.addressInfo[0].lng,data.addressInfo[0].lat]);//设置地图层级
+            if(data.addressInfo){this.areaInit(data.addressInfo)}
         },
         province(data){////省
             var _this=this;
-            _this.map.clearMap();
+            _this.map.clearMap()
              _this.map.remove(this.markersTwo)//清除点聚合 
-            this.map.setZoomAndCenter(5,[data[0].lng,data[0].lat]);
+            this.map.setZoomAndCenter(5,[106.259411,37.072703]);
             localStorage.setItem('provinceData',JSON.stringify(data))  
             if(data){
                 for (var i = 0; i < data.length; i ++) {                    
@@ -234,32 +229,6 @@ export default {
                     
             }
             
-        },
-        infoPopover(datas){
-            var _this=this;
-            let data=datas.level;
-            // _this.map.clearMap();
-            for (var i=0; i < data.length; i ++) {
-            console.log('99999',[data[i].lng,data[i].lat])
-                var marker=new AMap.Marker({
-                    position: [data[i].lng,data[i].lat],
-                    size: new AMap.Size(20, 20),//_this.iconSize,
-                    icon: require('../../assets/cp.png'),
-                    offset: new AMap.Pixel(-13, -30),
-                    map:_this.map,
-                    extData:data[i]
-                }); 
-                // _this.addressMarkers.push(marker);
-                // _this.map.add(marker);
-                // AMap.event.addListener(marker,'mouseover',(e)=>{          
-                //     var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
-                //     _this.showBoundsInfo(areaData)
-                // });
-                // AMap.event.addListener(marker,'mouseout',(e)=>{
-                //     _this.map.remove(_this.drawbounds.polygons)
-                //     _this.drawbounds.polygons=[];
-                // });
-            }
         },
         eject_addressInfo(areaData){
             this.storeCheck=true
@@ -452,6 +421,7 @@ export default {
                 truckDriving.search(path, function(status, result) {
                     if (status === 'complete') {
                         console.log('绘制货车路线完成')
+                        console.log(result)
                         if (result.routes && result.routes.length) {
                             _this.drawRoute(result.routes[0]);//路线 
                         }
@@ -581,15 +551,15 @@ export default {
             })
         },
         _onZoomEnd(){//监听地图缩放
+            var _this=this;
+            var provinceData=JSON.parse(localStorage.getItem('provinceData')),
+            cityData=JSON.parse(localStorage.getItem('cityData')),
+            areaData=JSON.parse(localStorage.getItem('areaData'));
             /**
              * zoom
              * 5-7  省份
              * 8-10 市/各别省区
              */
-            var _this=this;
-            var provinceData=JSON.parse(localStorage.getItem('provinceData')),
-            cityData=JSON.parse(localStorage.getItem('cityData')),
-            areaData=JSON.parse(localStorage.getItem('areaData'));
             if(provinceData&&this.map.getZoom()==6){this.province(provinceData);}
             if(cityData&&this.map.getZoom()==9){this.cityInit(cityData);}
             if(areaData&&this.map.getZoom()==13){this.areaInit(areaData);}

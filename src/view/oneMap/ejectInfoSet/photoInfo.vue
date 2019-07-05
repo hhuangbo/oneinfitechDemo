@@ -1,7 +1,7 @@
 <template>
 <div class="photoInfo" v-show="infoIsShow">
     <ul class="infoCont">
-        <li v-for="item in phoInfoData" > 
+        <li v-for="(item,index) in phoInfoData" :class="[phoneScal ? '' : 'phoneScal']" > 
             <img :src="item.img" @click="handleImg(item)" :class="[imgzoom==1 ? 'zoom-in' : '',imgzoom==2?'zoom-out':'']"/>
             <span>{{item.title}}</span>
         </li>
@@ -24,6 +24,7 @@ export default {
     data(){
         return{
             imgzoom:0,
+            phoneScal:-1,
             infoIsShow:true,//是否显示
             phoInfoData:[
                 {title:'整体园区',img:require('../../../assets/c1.jpg')},
@@ -53,9 +54,10 @@ export default {
             console.log(data)
             this.imgzoom=1;
         },
-        handleEnlarge(){//点击放大
+        handleEnlarge(index){//点击放大
             console.log('放大');
             this.imgzoom=1;
+            this.phoneScal=this.phoneScal == index ? -1 : index;
             // setInterval(() => {
             //     this.imgzoom=2;
             // }, 2000);
@@ -102,6 +104,10 @@ export default {
         }
         span{line-height: 30px;font-size: 12px;}
     }
+}
+.phoneScal{
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
 }
 .viewTool{    
     text-align: center;

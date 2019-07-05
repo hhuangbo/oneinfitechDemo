@@ -44,7 +44,7 @@ export default {
 .searchTerm{
     position: absolute;
     top: 20px;
-    left: 18%;    
+    left: 20rem;    
     background-color: #f9f9f9;
     max-width: 50%;
     padding: 2px 5px;
@@ -69,8 +69,8 @@ export default {
         transform: translate3d(-90%, 0, 0);
     }
     100%{
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(2rem, 0, 0);
+        transform: translate3d(2rem, 0, 0);
     }
 }
 @keyframes searchOutLeftpx {
@@ -79,8 +79,8 @@ export default {
         transform: translate3d(0, 0, 0); 
     }
     100%{
-        -webkit-transform: translate3d(-100%, 0, 0);
-        transform: translate3d(-190%, 0, 0);
+        -webkit-transform: translate3d(-16.5rem, 0, 0);
+        transform: translate3d(-16.5rem, 0, 0);
     }
 }
 </style>

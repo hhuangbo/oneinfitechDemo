@@ -11,7 +11,7 @@
                     :value="item.value">
                     </el-option>
                 </el-select> -->
-                <input class="searchInp" type="text"  autofocus="autofocus" v-model.trim="searchVal" @keyup.enter="searchEvent"/>
+                <input class="searchInp" type="text"  placeholder="项目检索  麦德龙" v-model.trim="searchVal" @keyup.enter="searchEvent"/>
                 <button class="btnsearch" @click="searchEvent">搜索</button>
             </div>
             <ul class="hotSearch">
@@ -19,7 +19,6 @@
                 <li v-for="item in hotData" @click="handlehotSearch(item)">{{item}}</li>
             </ul>
         </div>
-        
     </div>
 </template>
 
@@ -44,6 +43,13 @@ export default {
     methods:{
         searchEvent(){
             //查询成功跳转到map页面
+            if(this.searchVal==''){
+                this.$notify.error({
+                title: '提示',
+                message: '输入有误,无法匹配！'
+                });
+                return;
+            }
             this.$router.push({path:'oneMap',query:{selectType:this.selectValue,searchVal:this.searchVal}});
         },
         handlehotSearch(item){

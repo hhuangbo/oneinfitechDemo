@@ -113,19 +113,23 @@ export default {
 
             this.$store.commit('set_wareDataInfo',{});
             this.$store.commit('set_serviceCompVal',{});
-            this.$store.commit('set_menuActive',this.active1);
-            if(item.type=='3'){//收获地址
-                this.$parent.secondLevelData(item,this.active1)
-            }
-            if(item.type=='13' ){//干线路线
-                this.$parent.trunkLineInit(item)
-            }
+            // this.$store.commit('set_menuActive',this.active1);
+            this.$store.commit('set_menuActive',item.type);
+            // if(item.type=='3' || item.type=='8'){//收获地址
+            //     this.$parent.secondLevelData(item,this.active1)
+            // }
+            // if(item.type=='13' ){//干线路线
+            //     this.$parent.trunkLineInit(item)
+            // }
+            this.$parent.menuClassA(item,this.active1)
         },
         setTegel2(items,item,index){
             this.active2 = this.active2 == index?-1:index
             this.$store.commit('set_wareDataInfo',{})
             this.$store.commit('set_serviceCompVal',{});
-            this.$store.commit('set_menuActive',this.active1);
+            // this.$store.commit('set_menuActive',this.active1);
+            
+            this.$store.commit('set_menuActive',item.type);
             if(item.type=='3'){//收获地址
                 this.$parent.Level2Data(items)
             }
@@ -192,17 +196,17 @@ export default {
 .menu-pane{
     position: absolute;
     top: 20px;
-    left: 1%;    
+    left: 1%; 
+    height: 100%;   
 }
 .menuCate{
     width: 180px;
-    height:85%;
-    // overflow: hidden;
+    height:100%;
     position: relative;
     z-index: 9;
     .ul1{
         max-height: 70%;
-        overflow: auto;
+        overflow-y: scroll;
         box-shadow: 0 2px 6px rgba(0,0,0,0.12);
         background-color: #fff;
         border-radius: 3px 0 3px 3px;
@@ -220,7 +224,7 @@ export default {
 .toggle-button{
     width: 23px;
     height: 48px;
-    background: rgba(255,255,255,0.7) url('../../../assets/togglebtn.png') 7px center/7px 10px no-repeat;
+    background: rgba(255,255,255,0.5) url('../../../assets/togglebtn.png') 7px center/7px 10px no-repeat;
     border-left: 1px solid #f7f7f7;
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);    
     position: absolute;
@@ -285,6 +289,7 @@ li{cursor: pointer;line-height: 34px;}
         &::after{
             content: '|';
             padding:0 5px;
+            color: #fff;
         }
         &:last-child{
             &::after{
@@ -313,10 +318,4 @@ li{cursor: pointer;line-height: 34px;}
   cursor: pointer;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
 </style>

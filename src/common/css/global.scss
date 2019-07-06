@@ -91,6 +91,11 @@ h2,h3,h4{font-weight: 100;}
     padding:2% 10%;
 }
 
+.infoPop{
+    min-width: 260px;
+    width: auto;
+
+}
 //自定义复选 单选框样式
 .checkbox__label{
     border: 1px solid $C0d0e0f;

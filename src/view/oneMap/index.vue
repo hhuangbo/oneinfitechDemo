@@ -83,7 +83,7 @@ export default {
         menuActive(data){ //选取菜单展开的索引
             this.storeCheck=false
             // if(data==2){//收货地址
-            if(data==3|| data ==9){//收货地址
+            if(data==3|| data ==8 || data ==9 || data ==10){//收货地址
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([]);};
                 this.routeTruckMarker('');//清空干线路线的marker
                 return;
@@ -129,14 +129,22 @@ export default {
                 case '13':
                     this.trunkLineInit(data)
                     break;
+                case '8':
+                    var iconImg=require('../../assets/sp.png')
+                    this.infoPopover(data,iconImg)
+                    break;
                 case '9':
-                    this.infoPopover(data)
+                    var iconImg=require('../../assets/kp.png')
+                    this.infoPopover(data,iconImg)
+                    break;
+                case '10':
+                    var iconImg=require('../../assets/cp.png')
+                    this.infoPopover(data,iconImg)
                     break;
             }
         },
         secondLevelData(data,act){//左侧菜单点击取值 子组件1
             // this.map.clearMap()
-            console.log(data)
             if(data){
                 this.province(data.level)
                 localStorage.setItem('provinceData',JSON.stringify(data.level)) 
@@ -236,19 +244,77 @@ export default {
             }
             
         },
-        infoPopover(datas){
+        infoPopover(datas,iconImg){
             var _this=this;
             let data=datas.level;
             _this.map.clearMap();
+            var title=`<div class="el-message-box__header">
+                <div class="el-message-box__title"><span>aaaaaa</span></div>
+                <button type="button" class="el-message-box__headerbtn"><i class="el-message-box__close el-icon-close"></i></button>
+            </div>`;
+            var infoWindow = new AMap.InfoWindow({
+                isCustom: true, 
+                offset: new AMap.Pixel(0, -30)
+            });
             for (var i=0; i < data.length; i ++) {
-                console.log('99999',[data[i].lng,data[i].lat])
                 var marker = new AMap.Marker({
                     position: [data[i].lng,data[i].lat],
-                    icon: require('../../assets/cp.png'),
+                    icon: iconImg,
+                    iconSize:new AMap.Size(20, 20),
+                    extData:data[i],
                     map: _this.map
                 });
-                _this.map.setFitView();
+                // console.log(data[i].info[i].name,data[i].info[i].desc)
+                var dataInfo=data[i].info
+                var dataInfo_divs=[]
+                for(var j=0;i<dataInfo.length;i++){         
+                   dataInfo_divs.push(`<p><span>${dataInfo[j].name}：</span>${dataInfo[j].desc}</p>`)
+                }      
+                console.log(dataInfo_divs)     
+                marker.content=`<div class="infoPop el-message-box">
+                <div class="el-message-box__header">
+                    <div class="el-message-box__title"><span>${datas.title}</span></div>
+                    <button type="button" class="el-message-box__headerbtn"><i class="el-message-box__close el-icon-close"></i></button>
+                </div>
+                <div class="el-message-box__content">
+                ${dataInfo_divs}
+                </div></div>`;
+                AMap.event.addListener(marker,'click',(e)=>{
+                    infoWindow.setContent(e.target.content);
+                    infoWindow.open(_this.map, e.target.getPosition());
+                });
+                // _this.infoPopoverMarker(data[i],marker)
             }
+            // <p><span>所属公司：</span>${data[i].info[i].desc}</p>
+            //         <p><span>详细地址：</span>${data[i].info[i].desc}</p>
+            //         <p><span>发货次数：</span>${data[i].info[i].desc}</p>
+            _this.map.setFitView();
+        },
+        infoPopoverMarker(data,marker){   
+            var _this=this;         
+            var title=`<div class="el-message-box__header">
+                    <div class="el-message-box__title"><span>aaaaaa</span></div>
+                    <button type="button" class="el-message-box__headerbtn"><i class="el-message-box__close el-icon-close"></i></button>
+                </div>`;
+            var infoWindow = new AMap.InfoWindow({
+                isCustom: true, 
+                offset: new AMap.Pixel(0, -30)
+            });
+            for(var i=0;i<data.info.length;i++){
+                marker.content=`<div class="infoPop el-message-box">
+                <div class="el-message-box__header">
+                    <div class="el-message-box__title"><span>aaaaaa</span></div>
+                    <button type="button" class="el-message-box__headerbtn"><i class="el-message-box__close el-icon-close"></i></button>
+                </div>
+                <div class="el-message-box__content">
+                    <p><span>${data.info[i].name}：</span>${data.info[i].desc}</p>
+                </div></div>`;
+                AMap.event.addListener(marker,'click',(e)=>{
+                    infoWindow.setContent(e.target.content);
+                    infoWindow.open(_this.map, e.target.getPosition());
+                });
+            }
+                
         },
         eject_addressInfo(areaData){
             this.storeCheck=true
@@ -615,6 +681,45 @@ export default {
             context.marker.setOffset(new AMap.Pixel(-size / 2, -size / 2));
             context.marker.setContent(div)
         },
+        createInfoWindow (title, content) {//构建自定义信息窗体
+            var info = document.createElement("div");
+            info.className = "custom-info input-card content-window-card";
+            //可以通过下面的方式修改自定义窗体的宽高
+            // 定义顶部标题
+            var top = document.createElement("div");
+            var titleD = document.createElement("div");
+            var closeX = document.createElement("img");
+            top.className = "info-top";
+            titleD.innerHTML = title;
+            closeX.src = "https://webapi.amap.com/images/close2.gif";
+            closeX.onclick = this.closeInfoWindow;
+
+            top.appendChild(titleD);
+            top.appendChild(closeX);
+            info.appendChild(top);
+
+            // 定义中部内容
+            var middle = document.createElement("div");
+            middle.className = "info-middle";
+            middle.style.backgroundColor = 'white';
+            middle.innerHTML = content;
+            info.appendChild(middle);
+
+            // 定义底部内容
+            var bottom = document.createElement("div");
+            bottom.className = "info-bottom";
+            bottom.style.position = 'relative';
+            bottom.style.top = '0px';
+            bottom.style.margin = '0 auto';
+            var sharp = document.createElement("img");
+            sharp.src = "https://webapi.amap.com/images/sharp.png";
+            bottom.appendChild(sharp);
+            info.appendChild(bottom);
+            return info;
+        },
+        closeInfoWindow() {//关闭信息窗体
+            this.map.clearInfoWindow();
+        },
         clearMarker(marker) {// 清除 marker
 
             if (marker) {
@@ -644,6 +749,7 @@ export default {
 .infoTips{
     
 }
+
 
 </style>
 <style>

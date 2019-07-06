@@ -269,7 +269,7 @@ export default {
                 var dataInfo_divs=[]
                 for(var j=0;i<dataInfo.length;i++){         
                    dataInfo_divs.push(`<p><span>${dataInfo[j].name}：</span>${dataInfo[j].desc}</p>`)
-                }      
+                }
                 console.log(dataInfo_divs)     
                 marker.content=`<div class="infoPop el-message-box">
                 <div class="el-message-box__header">

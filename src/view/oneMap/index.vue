@@ -130,6 +130,7 @@ export default {
                     this.trunkLineInit(data)
                     break;
                 case '8':
+                    // var iconImg=require(`../../assets/${data.type}.png`)
                     var iconImg=require('../../assets/sp.png')
                     this.infoPopover(data,iconImg)
                     break;
@@ -264,10 +265,9 @@ export default {
                     extData:data[i],
                     map: _this.map
                 });
-                // console.log(data[i].info[i].name,data[i].info[i].desc)
                 var dataInfo=data[i].info
                 var dataInfo_divs=[]
-                for(var j=0;i<dataInfo.length;i++){         
+                for(var j=0;j<dataInfo.length;j++){         
                    dataInfo_divs.push(`<p><span>${dataInfo[j].name}：</span>${dataInfo[j].desc}</p>`)
                 }
                 console.log(dataInfo_divs)     

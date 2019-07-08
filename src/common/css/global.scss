@@ -36,13 +36,9 @@ img{
      border:none;
      vertical-align:baseline;
 }
-a, a:link, a:visited{
+a, a:link, a:visited,a:hover{
      color:#000;
      text-decoration:none;
-}
-a:hover{
-    color:#000;
-    text-decoration:underline;
 }
 /* 标签属性，textarea,input 强制输入时内容超出时换行，打断 */
 textarea,input{
@@ -96,6 +92,7 @@ h2,h3,h4{font-weight: 100;}
     width: auto;
 
 }
+.amap-info-close{right: 10px !important;}
 //自定义复选 单选框样式
 .checkbox__label{
     border: 1px solid $C0d0e0f;

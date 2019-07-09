@@ -29,6 +29,7 @@
         :class="[serviceCompVal && serviceCompVal.level_type==4 ?  'animated fadeInRight': 'animated fadeOutRight']"             
         v-if="serviceCompVal && serviceCompVal.level_type==4"/>
         
+        <div id="testA">哈哈哈哈</div>
     </div>
 </template>
 
@@ -247,12 +248,14 @@ export default {
                 var infowData=[{level_type:1,title:'仓库信息'},{level_type:2,title:'基本信息'},{level_type:3,title:'实时监控'}]
                 for (var inf = 0;inf < infowData.length; inf ++){
                     infowCont += `<li 
-                                onclick="handleSelected(${infowData[inf].level_type})")>
+                                onclick="handleSelected(${infowData[inf].level_type})">
                             <span class="checkbox__label">${infowData[inf].title}</span>
                             <span class="checkbox-inner" ></span>
                         </li>`
                 }
-                marker.content=`<ul class="wareinfowCont">${infowCont}</ul>`;
+                // marker.content=`<ul class="wareinfowCont">${infowCont}</ul>`;
+
+                marker.content=document.getElementById('testA')
 
                 _this.sh_markers_3.push(marker);
                 _this.map.add(marker);

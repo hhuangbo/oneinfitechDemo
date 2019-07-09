@@ -97,6 +97,7 @@ export default {
     right: 0;
     top: 50px;
     color: #fff;
+    z-index: 999;
 }
 .wareHead{
     display: flex;

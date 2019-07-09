@@ -87,7 +87,7 @@ export default {
     top: 30%;
     // left: 0;
     left: 20%;
-    z-index: 8;
+    z-index: 999;
     background: rgba(16, 117, 170, 0.77);
     color: #fff;
     .infoCont{

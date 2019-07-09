@@ -64,8 +64,8 @@ export default {
 .search{
     width: 100%;
     height: 100%;
-    background: url(../../assets/searchbg.jpg) no-repeat;
-    background-size: cover;
+    background: url(../../assets/searchbg.jpg) no-repeat center;
+    background-size: 100%;
     position: absolute;
     top: 0;
     left: 0;

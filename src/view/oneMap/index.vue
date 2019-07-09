@@ -19,9 +19,12 @@
         <storehouseInfo :dataInfo="storeInfoData" v-if="storeCheck" />
         <!--搜索条件-->
         <searchTerm />
-        <detailList :data="serviceCompVal"  
+
+        <orderInfo :data="serviceCompVal"  
         :class="[serviceCompVal && serviceCompVal.level_type==2 ? 'animated fadeInRight': 'animated fadeOutRight']" 
         v-if="serviceCompVal && serviceCompVal.level_type==2"/>
+        <epod :class="[serviceCompVal && serviceCompVal.level_type==3 ? 'animated fadeInRight': 'animated fadeOutRight']" 
+         v-if="serviceCompVal && serviceCompVal.level_type==3"/>
         <customerEva :data="serviceCompVal" 
         :class="[serviceCompVal && serviceCompVal.level_type==4 ?  'animated fadeInRight': 'animated fadeOutRight']"             
         v-if="serviceCompVal && serviceCompVal.level_type==4"/>
@@ -38,18 +41,21 @@ import warehInfo from './ejectInfoSet/warehInfo'
 import wareCondition from './ejectInfoSet/wareCondition'
 import storehouseInfo from './ejectInfoSet/storehouseInfo'
 import searchTerm from './ejectInfoSet/searchTerm'
-import detailList from './ejectInfoSet/detailList'
+import orderInfo from './ejectInfoSet/orderInfo'
+import epod from './ejectInfoSet/epod'
 import customerEva from './ejectInfoSet/customerEva'
 import {mapGetters} from 'vuex'
 export default {
     components:{
-        menuCate,photoInfo,warehInfo,wareCondition,storehouseInfo,searchTerm,detailList,customerEva
+        menuCate,photoInfo,warehInfo,wareCondition,storehouseInfo,searchTerm,orderInfo,epod,customerEva
     },
     data(){
         return{
             // orderInfoData:[],customerEvaData:[],
             show_wareCond:false,
             wareCondData:[],
+
+            // wareDataInfo:{level_type:''},
 
             serviceOrderData:[],
             map:null,//地图实例
@@ -122,6 +128,11 @@ export default {
             _this._onZoomEnd();
             _this.storeCheck=false
         });
+
+        window.handleSelected = function (data){
+            _this.$store.commit('set_wareDataInfo',{'level_type':data})
+            console.log('哈哈哈哈',_this.wareDataInfo);
+        }
     },
     methods:{
         mapInit(){//初始创建地图
@@ -231,9 +242,18 @@ export default {
                     // map:_this.map,
                     extData:data[i]
                 }); 
-                marker.content='<div className="custom-infowindow input-card">' +
-                            '<label style="color:grey">故宫博物院</label>' 
-                        '</div>';
+
+                var infowCont='';
+                var infowData=[{level_type:1,title:'仓库信息'},{level_type:2,title:'基本信息'},{level_type:3,title:'实时监控'}]
+                for (var inf = 0;inf < infowData.length; inf ++){
+                    infowCont += `<li 
+                                onclick="handleSelected(${infowData[inf].level_type})")>
+                            <span class="checkbox__label">${infowData[inf].title}</span>
+                            <span class="checkbox-inner" ></span>
+                        </li>`
+                }
+                marker.content=`<ul class="wareinfowCont">${infowCont}</ul>`;
+
                 _this.sh_markers_3.push(marker);
                 _this.map.add(marker);
                 AMap.event.addListener(marker,'click',(e)=>{
@@ -244,8 +264,7 @@ export default {
                     var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
                     _this.showBoundsInfo(areaData)
 
-                    
-                    
+                
                     infoWindow.setContent(e.target.content);
                     infoWindow.open(_this.map, e.target.getPosition());
                     // _this.ware_condition(areaData)//仓库照片/基本信息/实时监控
@@ -254,7 +273,7 @@ export default {
                     _this.map.remove(_this.drawbounds.polygons)
                     _this.drawbounds.polygons=[];
 
-                    // this.show_wareCond=false
+
                 });
                     
             }
@@ -381,7 +400,6 @@ export default {
                     strokeWeight: 6,      //线宽
                     // strokeStyle: "solid"  //线样式
                 });
-                _this.map.setFitView();
                 var iconSize=new AMap.Size(40, 40);
                 _this.TruckDMarker.startMarker = new AMap.Marker({//起点
                     position: lineArr[0],
@@ -397,6 +415,7 @@ export default {
                     offset: new AMap.Pixel(-20, -10),
                     map: _this.map
                 })
+                _this.map.setFitView();
             }
         },
         simplifierInit(data){//交付轨迹 服务订单           
@@ -471,7 +490,7 @@ export default {
 
                 truckDriving.search(path, function(status, result) {
                     if (status === 'complete') {
-                        console.log('绘制货车路线完成')
+                        console.log('绘制货车路线完成',result)
                         if (result.routes && result.routes.length) {
                             _this.drawRoute(result.routes[0]);//路线 
                         }
@@ -517,7 +536,6 @@ export default {
                 zIndex:1
             });
             routeCar.moveTo(path, 2000000)
-            // var iconSize=new AMap.Size(30, 30);
             var startMarker = new AMap.Marker({//起点
                 position: path[0],
                 size: _this.iconSize,
@@ -720,7 +738,7 @@ export default {
 
 
 </style>
-<style>
+<style lang="scss" >
 .amap-marker-label{
     background-color: #0d0e0f;
     color: #fff;
@@ -734,6 +752,17 @@ export default {
 .amap-logo,.amap-copyright{
     display: none !important;
     opacity:0 !important;
+}
+.wareinfowCont{
+    width: 140px;
+    li{   
+        height: 34px;
+        line-height: 34px;
+        border-radius: 5px;
+        margin: 5px 10px;
+        display: flex;
+        justify-content: space-between;
+    }
 }
 </style>
 

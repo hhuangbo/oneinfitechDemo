@@ -208,7 +208,7 @@ export default {
 .menu-pane{
     position: absolute;
     top: 20px;
-    left: 1%; 
+    left: 33px; 
     height: 100%;   
 }
 .menuCate{
@@ -235,7 +235,7 @@ export default {
 }
 .toggle-button{
     width: 23px;
-    height: 48px;
+    height: 35px;
     background: rgba(255,255,255,0.9) url('../../../assets/togglebtn.png') 7px center/7px 10px no-repeat;
     border-left: 1px solid #f7f7f7;
     box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);    

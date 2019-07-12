@@ -1,5 +1,5 @@
 <template>
-    <div class="customerEva" v-show="customerEvaShow">
+    <div class="ejectInfoSet customerEva" v-show="customerEvaShow">
         <div class="toolRight">
             <i class="iconfont icon-close" @click="handleCurrClose(1)"></i>  
         </div>
@@ -83,20 +83,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.customerEva{
-    width: 40%;
-    position: absolute;
-    right: 0;
-    top: 50px;
-    padding: 20px;
-    background-color: $C0d0e0f;
-    color: #fff;
-    text-align: center;
-    .toolRight{
-        position: absolute;
-        top: 7px;
-        right: 5px;
-    }
+.customerEva{width: 50%;
 }
 .eva-item{display: flex;flex-wrap: wrap;font-size: 14px;margin:15px 0;}
 .evalabel{       

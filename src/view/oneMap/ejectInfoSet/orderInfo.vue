@@ -1,5 +1,5 @@
 <template>
-    <div class="orderInfo" v-show="orderShow">
+    <div class="ejectInfoSet orderInfo" v-show="orderShow">
         <div class="toolRight">
             <i class="iconfont icon-close" @click="handleCurrClose(1)"></i>  
         </div>
@@ -76,19 +76,6 @@ export default {
 
 <style lang="scss" scoped>
 .orderInfo{
-    width: 50%;
-    position: absolute;
-    right: 0;
-    top: 50px;
-    padding: 20px;
-    background-color: $C0d0e0f;
-    color: #fff;
-    text-align: center;
-    .toolRight{
-        position: absolute;
-        top: 7px;
-        right: 5px;
-    }
     label.title{
         font-size: 18px;
         display: inline-block;

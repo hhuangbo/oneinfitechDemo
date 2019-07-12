@@ -13,11 +13,11 @@ export default {
     width: 100%;
     text-align: center;
     letter-spacing: 4px;
-    color: $C0d0e0f;
+    color: $C1075aa;
     background-color: rgba(0, 0, 0, 0.65);
     position: absolute;
     bottom: 0;
     z-index: 9;
-    padding: 2px 0;
+    padding: 3px 0;
 }
 </style>

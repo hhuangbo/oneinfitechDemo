@@ -17,6 +17,8 @@
         
         <!--仓库照片、基本信息、实时监控-->
         <checkBoxTemp id="wareinfowCont" :data="wareinfowData" :mType="4" v-show="wareinfow_isShow"/>
+
+        
         <!--搜索条件-->
         <searchTerm />
 
@@ -59,6 +61,8 @@ export default {
             wareinfowData:[],
             serviceOrderData:[],
             map:null,//地图实例
+            infoWindow:null,//信息窗体
+            ainfoWindow:null,
             markerClusterer:null,//聚合点对象实例
             mapData:{
                 resizeEnable:true,//自适应大小
@@ -99,15 +103,16 @@ export default {
             var _this=this;
             this.storeCheck=false
             localStorage.setItem('thisMenuActive',data)
-            _this._onZoomEnd();
-            if(data==3|| 8<= data <=11){//收货地址
+            if(data==6){_this.map.clearMap();}
+            if(data==1 || data==3 || data==4 || data==5 || 8<= data <=11){//收货地址
                 if(window.pathSimplifierIns){pathSimplifierIns.setData([]);};
-                this.routeTruckMarker('');//清空干线路线的marker
-                return;
+                _this.routeTruckMarker('');//清空干线路线的marker
+                // return;
             }else{
-                this.map.clearMap();
-                if(window.pathSimplifierIns){pathSimplifierIns.setData([])}
+                // _this.map.clearMap();
+                // if(window.pathSimplifierIns){pathSimplifierIns.setData([])}
             }
+            _this._onZoomEnd();
         },
         level3Data(data){
             this.setlevel3Data(data)
@@ -125,6 +130,7 @@ export default {
             _this._onZoomEnd();
             _this.storeCheck=false
         });
+        
     },
     methods:{
         mapInit(){//创建地图
@@ -136,14 +142,23 @@ export default {
                 center: _this.mapData.center,
                 resizeEnable: _this.mapData.resizeEnable,//自适应大小
                 viewMode: '2D'
-            })    
+            })  
+            //信息窗体
+            this.infoWindow = new AMap.InfoWindow({
+                offset: new AMap.Pixel(0, -20)
+            }); 
+            this.ainfoWindow = new AMap.InfoWindow({
+                offset: new AMap.Pixel(0, -20),
+                isCustom:true,closeWhenClickMap:true
+            });  
+
         },
         menuClassA(data,active){
-            if(data.type ==3 || data.type ==5 ){this.secondLevelData(data,active)}
+            if(data.type ==1 || data.type ==3 || data.type ==4 || data.type ==5 ){this.secondLevelData(data,active)}
             // else if(8<=data.type<=11){this.infoPopover(data);}//收货人 发货人 司机列表
             else if(data.type == 8 || data.type== 9 || data.type ==10 || data.type==11){this.infoPopover(data);}//收货人 发货人 司机列表
             else if(data.type == 7 || data.type == 12){this.cust_InfoMarker(data)}
-            else if(data.type == 13){this.trunkLineInit(data)}
+            else if(data.type == 2 || data.type == 13){this.trunkLineInit(data)}
             
         },
         secondLevelData(data,act){//左侧菜单点击取值 子组件1
@@ -156,15 +171,16 @@ export default {
         Level2Data(data){//左侧菜单点击取值 子组件2级
             if(data){this.cityInit(data.info)}
         },
-        setlevel3Data(data){console.log(data)
+        setlevel3Data(data){
             // if(data.addressInfo){this.areaInit(data.addressInfo)}
             if(data){this.areaInit(data)}
         },
-        province(data){////省
+        province(data){//省
             var _this=this;
             _this.map.clearMap();
              _this.map.remove(this.sh_markers_2)//清除点聚合 
-            this.map.setZoomAndCenter(5,[data[0].lng,data[0].lat]);
+            // this.map.setZoomAndCenter(5,[data[0].lng,data[0].lat]);
+            this.map.setZoomAndCenter(5);
             localStorage.setItem('provinceData',JSON.stringify(data))  
             if(data){
                 for (var i = 0; i < data.length; i ++) {                    
@@ -221,10 +237,6 @@ export default {
             } else{_this.map.setZoomAndCenter(11,[data[0].lng,data[0].lat]);data=data;}
             _this.map.remove(this.sh_markers_3)
 
-            var infoWindow = new AMap.InfoWindow({
-                offset: new AMap.Pixel(0, -35)
-            });
-
             for (var i=0; i < data.length; i ++) {
                 var marker=new AMap.Marker({
                     position: [data[i].lng,data[i].lat],
@@ -235,13 +247,14 @@ export default {
                     extData:data[i]
                 }); 
 
-                marker.content=document.getElementById('wareinfowCont');//弹出框
-                _this.wareinfow_isShow=true
-                _this.wareinfowData=[
-                    {level_type:1,title:'仓库信息'},
-                    {level_type:2,title:'基本信息'},
-                    {level_type:3,title:'实时监控'}
-                ]
+                if(localStorage.getItem('thisMenuActive')==4){//仓库信息
+                    marker.content=document.getElementById('wareinfowCont');//弹出框
+                    _this.wareinfowData=[
+                        {level_type:1,title:'仓库信息'},
+                        {level_type:2,title:'基本信息'},
+                        {level_type:3,title:'实时监控'}
+                    ]
+                }
                 
                 _this.sh_markers_3.push(marker);
                 _this.map.add(marker);
@@ -253,8 +266,11 @@ export default {
                     var areaData=JSON.parse(JSON.stringify(e.target.getExtData()))
                     _this.showBoundsInfo(areaData)
 
-                    infoWindow.setContent(e.target.content);
-                    infoWindow.open(_this.map, e.target.getPosition());
+                    if(localStorage.getItem('thisMenuActive')==4){//仓库信息
+                        _this.wareinfow_isShow=true
+                        _this.infoWindow.setContent(e.target.content);
+                        _this.infoWindow.open(_this.map, e.target.getPosition());
+                    }
                 });
                 AMap.event.addListener(marker,'mouseout',(e)=>{
                     _this.map.remove(_this.drawbounds.polygons)
@@ -278,10 +294,6 @@ export default {
             }
             let data=datas.level;
             _this.map.clearMap();
-            var infoWindow = new AMap.InfoWindow({
-                // isCustom: true, 
-                offset: new AMap.Pixel(0, -30)
-            });
             for (var i=0; i < data.length; i ++) {
                 var marker= new AMap.Marker({
                     position: [data[i].lng,data[i].lat],
@@ -301,10 +313,10 @@ export default {
                 <div class="el-message-box__content">
                 ${dataInfo_divs}
                 </div></div>`;
-                // _this.createInfoWindow(datas.title, marker.content)
+
                 AMap.event.addListener(marker,'click',(e)=>{
-                    infoWindow.setContent(e.target.content);
-                    infoWindow.open(_this.map, e.target.getPosition());
+                    _this.infoWindow.setContent(e.target.content);
+                    _this.infoWindow.open(_this.map, e.target.getPosition());
                 });
             }
             _this.map.setFitView();
@@ -338,6 +350,13 @@ export default {
         showBoundsInfo(data){
             this.drawBounds(data.area)
         },
+        simplifierInit(data){//交付轨迹 服务订单           
+            if(data.level_type=='1'){//交付轨迹
+                this.truckDrivingData(data)
+            }else{//客户评价
+                this.serviceOrderData=data
+            }
+        },
         trunkLineInit(data){
             var _this=this;
             AMapUI.load(['ui/misc/PathSimplifier'], function(PathSimplifier) {
@@ -352,61 +371,48 @@ export default {
         singleRoute(data){//干线路线
             var _this=this;
             _this.map.clearMap();
-            if (window.pathSimplifierIns) {pathSimplifierIns.setData([]);}            
-            if(data.title.indexOf('北京') !=-1){
-                var lineArr = {"path":[
-                    [121.424029,31.189007],
-                    [118.78731,32.235739],
-                    [117.117388,34.111513],
-                    [113.425982,34.72778],
-                    [116.415312,39.852138]
-                    ]};
-                _this.truckDrivingData(lineArr)
-            }else if(data.title.indexOf('南京') !=-1){                
-                _this.map.clearMap();
-                var lineArr = [
-                    [121.424029,31.189007],
-                    [120.918658,31.353336],
-                    [120.638507,31.470539],
-                    [120.347369,31.568876],
-                    [119.946368,31.760568],
-                    [119.473956,32.175315],
-                    [118.831256,32.012436]
-                ];
-                    // 绘制轨迹
-                var polyline = new AMap.Polyline({
-                    map: _this.map,
-                    path: lineArr,
-                    showDir:true,
-                    strokeColor: "#28F",  //线颜色
-                    // strokeOpacity: 1,     //线透明度
-                    strokeWeight: 6,      //线宽
-                    // strokeStyle: "solid"  //线样式
-                });
-                var iconSize=new AMap.Size(40, 40);
-                _this.TruckDMarker.startMarker = new AMap.Marker({//起点
-                    position: lineArr[0],
-                    size: iconSize,
-                    icon: require('../../assets/difineDir1.png'),
-                    offset: new AMap.Pixel(-10, -20),
-                    map: _this.map
-                })
-                _this.TruckDMarker.endMarker = new AMap.Marker({//终点
-                    position: lineArr[lineArr.length-1],
-                    size: iconSize,
-                    icon: require('../../assets/difineDir2.png'),
-                    offset: new AMap.Pixel(-20, -10),
-                    map: _this.map
-                })
-                _this.map.setFitView();
-            }
-        },
-        simplifierInit(data){//交付轨迹 服务订单           
-            if(data.level_type=='1'){//交付轨迹
-                this.truckDrivingData(data)
-            }else{//客户评价
-                this.serviceOrderData=data
-            }
+            if (window.pathSimplifierIns) {pathSimplifierIns.setData([]);} 
+
+            _this.truckDrivingData(data) 
+            
+            //if(data.title.indexOf('南京') !=-1){                
+            //     _this.map.clearMap();
+            //     var lineArr = [
+            //         [121.424029,31.189007],
+            //         [120.918658,31.353336],
+            //         [120.638507,31.470539],
+            //         [120.347369,31.568876],
+            //         [119.946368,31.760568],
+            //         [119.473956,32.175315],
+            //         [118.831256,32.012436]
+            //     ];
+            //         // 绘制轨迹
+            //     var polyline = new AMap.Polyline({
+            //         map: _this.map,
+            //         path: lineArr,
+            //         showDir:true,
+            //         strokeColor: "#28F",  //线颜色
+            //         // strokeOpacity: 1,     //线透明度
+            //         strokeWeight: 6,      //线宽
+            //         // strokeStyle: "solid"  //线样式
+            //     });
+            //     var iconSize=new AMap.Size(40, 40);
+            //     _this.TruckDMarker.startMarker = new AMap.Marker({//起点
+            //         position: lineArr[0],
+            //         size: iconSize,
+            //         icon: require('../../assets/difineDir1.png'),
+            //         offset: new AMap.Pixel(-10, -20),
+            //         map: _this.map
+            //     })
+            //     _this.TruckDMarker.endMarker = new AMap.Marker({//终点
+            //         position: lineArr[lineArr.length-1],
+            //         size: iconSize,
+            //         icon: require('../../assets/difineDir2.png'),
+            //         offset: new AMap.Pixel(-20, -10),
+            //         map: _this.map
+            //     })
+            //     _this.map.setFitView();
+            // }
         },
         set_initPage(orderData,PathSimplifier) {
             var _this=this;
@@ -427,7 +433,7 @@ export default {
                     //轨迹线的样式
                     pathLineStyle: {
                         strokeStyle: '#28F',
-                        lineWidth: 6,
+                        lineWidth: 4,
                         dirArrowStyle: true
                     }
                 }
@@ -437,6 +443,7 @@ export default {
             _this.$http.get('../../static/json/routes.json').then(res =>{
                 var routeData=res.data;
                 var travelRoutes=[];
+
                 pathSimplifierIns.setData(routeData);
                 _this.routeTruckMarker(routeData)
             }).catch(err =>{
@@ -507,48 +514,93 @@ export default {
         drawRoute(route){//点标记
             var _this=this;
             var path = _this.parseRouteToPath(route);
-            var difineICON=require('../../assets/difineDir1.png');
-            var routeCar = new AMap.Marker({
-                map: _this.map,
-                position: path[0],
-                size: (10,10),
-                icon:  require('../../assets/car.png'),
-                offset: new AMap.Pixel(-26, -13),
-                autoRotation: true,
-                angle:-90,
-                zIndex:1
-            });
-            routeCar.moveTo(path, 2000000)
+                var difineICON_start,difineICON_end;
+            if(localStorage.getItem('thisMenuActive')==6){
+                difineICON_start=require('../../assets/difineDir1-1.png');
+                difineICON_end=require('../../assets/difineDir2-1.png');
+            }else{
+                difineICON_start=require('../../assets/difineDir1.png');
+                difineICON_end=require('../../assets/difineDir2.png');
+            }
             var startMarker = new AMap.Marker({//起点
                 position: path[0],
                 size: _this.iconSize,
-                icon: require('../../assets/difineDir1.png'),
-                offset: new AMap.Pixel(-13, -25),
+                icon: difineICON_start,//require('../../assets/difineDir1_1.png'),
+                offset: new AMap.Pixel(-8, -9),
                 map: _this.map
             })
-             startMarker.setLabel({
-                offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
-                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'right', //设置文本标注方位
-            });
             // startMarker.on('mousemove',_this.infosdasd)
             var endMarker = new AMap.Marker({//终点
                 position: path[path.length - 1],
                 size: _this.iconSize,
-                icon: require('../../assets/difineDir2.png'),
-                offset: new AMap.Pixel(-13, -20),
+                icon: difineICON_end,//require('../../assets/difineDir2.png'),
+                offset: new AMap.Pixel(-10, -8),
                 map: _this.map
-            })
-            endMarker.setLabel({
-                offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
-                content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
-                direction: 'right', //设置文本标注方位
             });
+            if(localStorage.getItem('thisMenuActive')==6){//服务订单
+                // startMarker.setLabel({
+                //     offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                //     content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                //     direction: 'right', //设置文本标注方位
+                // }); 
+                startMarker.setLabel({
+                    offset: new AMap.Pixel(5, -10),  //设置文本标注偏移量
+                    content: '<div class="info infop-start"><span class="sp1">发</span><span class="sp2">南京</span></div><div class="infop-sharp"></div>', 
+                    direction: 'top', //设置文本标注方位
+                });
+                //  var ainfoWindow = new AMap.InfoWindow({
+                //     offset: new AMap.Pixel(0, -20),
+                //     isCustom:true
+                // }); 
+                startMarker.content="<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>"
+                // startMarker.content='<div class="infop_start"><span class="sp1">发</span><span class="sp2">南京</span></div>'
+                // infoWindow.setContent(startMarker.content);
+                // infoWindow.open(_this.map, path[0]);
+                AMap.event.addListener(startMarker,'mouseover',(e)=>{
+                    _this.ainfoWindow.setContent(e.target.content);
+                    _this.ainfoWindow.open(_this.map, e.target.getPosition());
+                });
+                AMap.event.addListener(startMarker,'mouseover',(e)=>{
+                    _this.ainfoWindow.close()
+                });
+
+                // endMarker.setLabel({
+                //     offset: new AMap.Pixel(5, 10),  //设置文本标注偏移量
+                //     content: "<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>", //设置文本标注内容
+                //     direction: 'right', //设置文本标注方位
+                // }); 
+                
+                endMarker.setLabel({
+                    offset: new AMap.Pixel(5, -10),  //设置文本标注偏移量
+                    content: '<div class="info infop-start"><span class="sp1-1">收</span><span class="sp2">浙江</span></div><div class="infop-sharp"></div>', 
+                    direction: 'top', //设置文本标注方位
+                });
+                endMarker.content="<div class='infoTips'><p>EAT 10:30</p><p>ATA 10:30 17mins </p><p>ETD 10:30</p><p>ATD 12:47 10mins</p></div>"
+                AMap.event.addListener(endMarker,'mouseover',(e)=>{
+                    _this.ainfoWindow.setContent(endMarker.content);
+                    _this.ainfoWindow.open(_this.map, path[path.length - 1]);
+                });
+                AMap.event.addListener(endMarker,'mouseover',(e)=>{
+                    _this.ainfoWindow.close()
+                });
+
+                var routeCar = new AMap.Marker({
+                    map: _this.map,
+                    position: path[0],
+                    size: (10,10),
+                    icon:  require('../../assets/car.png'),
+                    offset: new AMap.Pixel(-26, -13),
+                    autoRotation: true,
+                    angle:-90,
+                    zIndex:1
+                });
+                routeCar.moveTo(path, 2000000)
+            }
             var routeLine = new AMap.Polyline({
                 path: path,
                 showDir:true,
-                strokeWeight: 6,
-                strokeColor: '#28F',
+                strokeWeight: 5,
+                strokeColor: '#2f7fdc'//'#28F',
             })
             routeLine.setMap(this.map)
             
@@ -610,7 +662,7 @@ export default {
             var _this=this;
             var this_menuAct=localStorage.getItem('thisMenuActive');//当前展开的菜单
             
-            if(this_menuAct==3){//收货地址
+            if(this_menuAct==1 || this_menuAct==3 || this_menuAct==4 || this_menuAct==5){//收货地址
                 var provinceData=JSON.parse(localStorage.getItem('provinceData')),
                 cityData=JSON.parse(localStorage.getItem('cityData')),
                 areaData=JSON.parse(localStorage.getItem('areaData'));
@@ -651,45 +703,6 @@ export default {
             context.marker.setOffset(new AMap.Pixel(-size / 2, -size / 2));
             context.marker.setContent(div)
         },
-        createInfoWindow (title, content) {//构建自定义信息窗体
-            var info = document.createElement("div");
-            info.className = "custom-info input-card content-window-card";
-            //可以通过下面的方式修改自定义窗体的宽高
-            // 定义顶部标题
-            var top = document.createElement("div");
-            var titleD = document.createElement("div");
-            var closeX = document.createElement("img");
-            top.className = "info-top";
-            titleD.innerHTML = title;
-            closeX.src = "https://webapi.amap.com/images/close2.gif";
-            closeX.onclick = this.closeInfoWindow;
-
-            top.appendChild(titleD);
-            top.appendChild(closeX);
-            info.appendChild(top);
-
-            // 定义中部内容
-            var middle = document.createElement("div");
-            middle.className = "info-middle";
-            middle.style.backgroundColor = 'white';
-            middle.innerHTML = content;
-            info.appendChild(middle);
-
-            // 定义底部内容
-            var bottom = document.createElement("div");
-            bottom.className = "info-bottom";
-            bottom.style.position = 'relative';
-            bottom.style.top = '0px';
-            bottom.style.margin = '0 auto';
-            var sharp = document.createElement("img");
-            sharp.src = "https://webapi.amap.com/images/sharp.png";
-            bottom.appendChild(sharp);
-            info.appendChild(bottom);
-            return info;
-        },
-        closeInfoWindow() {//关闭信息窗体
-            this.map.clearInfoWindow();
-        },
         clearMarker(marker) {// 清除 marker
             if (marker) {
                 this.sh_markers.setMap(null);
@@ -720,13 +733,61 @@ export default {
 }
 
 
+
+
 </style>
 <style lang="scss" >
-.amap-marker-label{
+.infop-start{//
+    height: 20px;
+    line-height: 20px;
+    border-radius: 4px;
+    .sp1,.sp1-1,.sp2{
+        padding: 3px 4px;
+        color: #fff;opacity: 1;
+    }
+    .sp1{background-color: #e53447;}
+    .sp1-1{background-color: #f1bb2e;}
+    .sp2{padding: 5px;color: #000;
+    background-color: #fff;}
+}
+.infop-sharp{
+    position: absolute;
+    content: "";
+    margin-left: 20px;
+    margin-top: 1px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #fff;
+    &::after{
+        position: absolute;
+        content: "";
+        margin-left: -8px;
+        margin-top: -7px;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid rgba(0,0,0,0.3);
+        filter: blur(2px);
+        z-index: -1;
+    }
+}
+// .amap-info-close{display: none;}
+
+.infoTips{
     background-color: #0d0e0f;
     color: #fff;
     opacity: .9;
     padding: 10px;
+    border-radius: 3px;
+    border:none;
+}
+
+.amap-marker-label{
+    padding: 0;
+
+    // background-color: #0d0e0f;
+    color: #fff;
+    opacity: .9;
+    // padding: 10px;
     border-radius: 3px;
     border:none;
 }

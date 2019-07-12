@@ -7,11 +7,12 @@
                     {{item.title}}
                     <i :class="[active1==index ? 'iconfont icon-e60b' : 'iconfont icon-eb38']"></i>
                 </span>
-                    <el-collapse-transition>
+                <el-collapse-transition>
                     <div class="ul2 " v-if="item.level&&(active1 == index)">
                             <div v-if="item.type == 3 || item.type ==4|| item.type ==5"
                             class="pca-screen"><span v-for="(pca,ind) in PCAData" 
-                            @click="pcaScreen(ind)" :class="pcaScreen_act==ind ? 'pcaScreen_act' : ''">{{pca}}</span></div>
+                            @click="pcaScreen(ind)" :class="pcaScreen_act==ind ? 'pcaScreen_act' : ''">{{pca}}</span>
+                            </div>
 
                             <menuSearch v-if="item.type == 6 || item.type ==8|| item.type ==9" :searchMenuData="item.level" @searchResult="searchResult"></menuSearch>
                             <transition-group
@@ -31,13 +32,14 @@
                                     @click="handleLinkage(items,item,indexs)" title="联动"></i>
                                 </div> 
                                 <el-collapse-transition>
-                                    <menuType1  v-if="items.info&&(active2 == indexs)&& (item.type==4 || item.type==6)" :data="items.info" :mType="item"/>
-                                    <menuType2 v-if="items.info&&(active2 == indexs)&&item.type==3" :data="items.info" />         
+                                    <checkBoxTemp  v-if="items.info&&(active2 == indexs)&& item.type==6" :data="items.info" :mType="item"/>
+                                    <!-- <menuType1  v-if="items.info&&(active2 == indexs)&& item.type==6" :data="items.info" :mType="item"/> -->
+                                    <menuType2 v-if="items.info&&(active2 == indexs)&& (item.type==1 || item.type==3 || item.type==4 || item.type==5)" :data="items.info" />         
                                 </el-collapse-transition>
                             </li>
                         </transition-group>
                     </div>
-                    </el-collapse-transition>
+                </el-collapse-transition>
             </li>
         </ul>
         <button class="enterWork" @click="enterWork">进入工作台</button>
@@ -47,6 +49,7 @@
 </template>
 
 <script>
+import checkBoxTemp from '../../../components/pubCompents/checkBoxTemp'
 import menuType1 from './menuType1'
 import menuType2 from './menuType2'
 import menuSearch from './menu_search'
@@ -54,6 +57,7 @@ import menuSearch from './menu_search'
 import {mapGetters} from 'vuex'
 export default {
     components:{
+        checkBoxTemp,
         menuType1,
         menuType2,
         menuSearch
@@ -87,8 +91,6 @@ export default {
         init() {
             //初始控制台
             var _this = this;
-            //  _this.menuList = _this.menuInit.menuList;
-            // console.log(_this.menuList)
                 //默认展开收获地址
             // this.$parent.secondLevelData(_this.menuList[2],this.active1)
             this.$http.get("../../static/json/menuCate.json")
@@ -130,32 +132,22 @@ export default {
             // this.$store.commit('set_menuActive',this.active1);
             
             this.$store.commit('set_menuActive',item.type);
-            if(item.type=='3'){//收获地址
+            if(item.type=='1' || item.type=='3' || item.type=='4' || item.type=='5'){//项目检索、收获地址、仓库信息、站点信息
                 this.$parent.Level2Data(items)
             }
-            if(items.title.indexOf('上海') !=-1){this.$parent.singleRoute(items);return;}
+            
+            if(item.type== 2 || item.type== 13){//合同信息 干线路线
+                this.$parent.singleRoute(items);return;
+            }
+            // if(items.title.indexOf('上海') !=-1){this.$parent.singleRoute(items);return;}
         },
         handleLinkage(items,item,indexs){//联动
             this.LinkageActive=this.LinkageActive==indexs ? -1 : indexs;
             let type=item.type;
             this.$store.commit('set_searchTermData',{items,item})
-            
-            //联动刷新菜单
-            console.log(items,this.menuList)
-            // var currMenuList=items
-            // var oldMenuList=this.menuList
-            // var newMenuList=[]
-            // for(var i = 0; i< oldMenuList.length; i ++){
-            //     var level_oldMenuList=oldMenuList[i].level;
-            //     for(var j = 0; j < level_oldMenuList.length; j ++){
-            //         if(items.relation_controller)level_oldMenuList[j].relation_controller
-            //     }
-            // }
         },
         enterWork(){//进入工作台 跳转
-            this.$alert('进入壹站工作台...', '提示', {
-                confirmButtonText: '确定'
-            });
+            this.$router.push({ path: '/dataKanbanList' })
         },
         // set_level3Data(data){
         //     this.$parent.setlevel3Data(data)
@@ -284,7 +276,6 @@ li{cursor: pointer;line-height: 34px;}
     height: auto !important;
     // border-bottom: 1px solid #f5f5f5;
     span{
-        font-size: 14px !important;
         color: $Cfe6a01 !important;
         background-color: #000 !important;
         &:first-child{border-left: 4px solid red;}

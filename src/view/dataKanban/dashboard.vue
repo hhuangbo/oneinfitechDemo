@@ -10,54 +10,37 @@
       <el-collapse-transition>
         <div class="addKanban" v-show="isShow">
           <p class="addKanban_title">添加新面板</p>
-          <div class="addKanban_list" @click="addKanban(1)">
-            <img src="./img/DDS.png" alt="">
-            <p>订单数看板</p>
-          </div>
-
-          <div class="addKanban_list" @click="addKanban(2)">
-            <img src="./img/KKFB.png" alt="">
-            <p>客户分布</p>
-          </div>
-
-          <div class="addKanban_list" @click="addKanban(3)">
-            <img src="./img/DDLQS.png" alt="">
-            <p>订单趋势</p>
+          <div  ref="addKanbans"></div>
+          <div class="addKanban_list" v-for="(item, i) in order"  v-dragging="{ item: item, list: order, group: 'item' }" :key="item.id" :disabled="isDisable" @click="addKanban(item.type, i, item)">
+            <img src="./img/DDS.png" alt="" v-show="item.type == 1">
+            <img src="./img/KKFB.png" alt="" v-show="item.type == 2">
+            <img src="./img/DDLQS.png" alt="" v-show="item.type == 3">
+            <p>{{item.name}}</p>
           </div>
         </div>
       </el-collapse-transition>
 
       <div class="wrap_box">
-        <div class="box_left">
-          <div class="left_item" v-for="(item, i) in data" v-dragging="{ item: item, list: data, group: 'item' }" :key="item.id" v-if="item.isShow == true">
-            <!--订单数据表-->
-            <div class="left_order" v-if="item.text == '订单'">
-              <p class="title">{{item.text}}</p>
-              <div @mouseenter="enter(i)" @mouseleave="leave()">
-                <div class="popover">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
-                <div class="popoverList" v-show="isPopover == i">
-                  <div @click="popover(i)">关闭</div>
-                </div>
+        <div class="box_left" ref="box_left">
+          <div class="left_item" v-for="(item, i) in data" v-dragging="{ item: item, list: data, group: 'item' }" :key="item.id">
+            <div @click="enter(i)" class="popover_box" v-if="item.type != 4">
+              <div class="popover">
+                <div></div>
+                <div></div>
+                <div></div>
               </div>
-              <div ref="myChart" :id="'myChart' + i" style="width: 100%; height: 100%"></div>
+              <div class="popoverList" @mouseleave="leave()" v-show="isPopover == i">
+                <span @click="popover(i, item)">关闭</span>
+              </div>
+            </div>
+            <!--订单数据表-->
+            <div class="left_order" v-if="item.type == 1">
+              <p class="title">{{item.name}}</p>
+              <div ref="myChart" :id="'myChart' + i" class="left_order_myChart"></div>
             </div>
             <!--客户分布图-->
-            <div class="left_customer" v-if="item.text == '客户分布'">
-              <p class="title">{{item.text}}</p>
-              <div @mouseenter="enter(i)" @mouseleave="leave()">
-                <div class="popover">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
-                <div class="popoverList" v-show="isPopover == i">
-                  <div @click="popover(i)">关闭</div>
-                </div>
-              </div>
+            <div class="left_customer" v-if="item.type == 2">
+              <p class="title">{{item.name}}</p>
               <div class="customer_left">
                 <div ref="myChart2" :id="'myChart2' + i" style="width:100%; height: 100%"></div>
                 <p>中国外运</p>
@@ -82,22 +65,12 @@
               </div>
             </div>
             <!--订单数据表-->
-            <div class="left_order" v-if="item.text == '订单趋势'">
-              <p class="title">{{item.text}}</p>
-              <div @mouseenter="enter(i)" @mouseleave="leave()">
-                <div class="popover">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </div>
-                <div class="popoverList" v-show="isPopover == i">
-                  <div @click="popover(i)">关闭</div>
-                </div>
-              </div>
-              <div ref="myChart3" :id="'myChart3' + i" style="width:100%; height: 100%"></div>
+            <div class="left_order" v-if="item.type == 3">
+              <p class="title">{{item.name}}</p>
+              <div ref="myChart3" :id="'myChart3' + i" class="left_order_myChart"></div>
             </div>
             <!--添加-->
-            <div class="left_item add_item" v-if="item.text == '添加'">
+            <div class="add_item" v-if="item.name == '添加'" @click="openPanel">
               <i class="el-icon-plus"></i>
             </div>
           </div>
@@ -118,7 +91,8 @@
   export default {
     data() {
       return {
-        isShow: true,
+        isDisable: true,
+        isShow: false,
         geoCoordMap: geoCoordMap,
         BJData: BJData,
         SHData: SHData,
@@ -126,21 +100,22 @@
         isPopover: null,
         isDisplayPanel: true,
         index: 5,
+        order:[],
         data: [{
-          text: "订单",
-          isShow: true,
+          name: "订单",
+          type: '1',
           id: 1
         }, {
-          text: "客户分布",
-          isShow: true,
+          name: "客户分布",
+          type: '2',
           id: 2
         }, {
-          text: "订单趋势",
-          isShow: true,
+          name: "订单趋势",
+          type: '3',
           id: 3
         }, {
-          text: "添加",
-          isShow: true,
+          name: "添加",
+          type: '4',
           id: 4
         }]
         }
@@ -158,15 +133,35 @@
       this.warehouseDistribution()
     },
     methods: {
+      offsetDis(obj) {
+        let l = 0, t = 0;
+        while(obj) {
+          l = l + obj.offsetLeft + obj.clientLeft;
+          t = t + obj.offsetTop + obj.clientTop;
+          obj = obj.offsetParent;
+        }
+        return {left: l, top: t};
+      },
+      openPanel() {
+        this.isShow = !this.isShow
+      },
       enter(i) {
         this.isPopover = i
       },
       leave(){
         this.isPopover = null;
       },
-      popover(i) {
-        let a = this.data[i].isShow == true ? false : true
-        this.$set(this.data[i], 'isShow', a)
+      popover(i, item) {
+        let a = document.querySelectorAll('.left_item')[i]
+        let b = this.offsetDis(a)
+        let e = this.offsetDis(this.$refs.addKanbans).top - b.top
+        let d = this.order.length * 310
+        let c = d - b.left
+        a.style = 'transform: translate(' + c + 'px,' + e + 'px) scale(0.5);opacity: 0;'
+        setTimeout(() => {
+          this.data.splice(i, 1)
+          this.order.push(item)
+        }, 1000)
       },
       drawLine(){
         this.$refs.myChart.forEach((item) => {
@@ -174,7 +169,7 @@
           // 绘制图表
           let dataAxis = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
           let data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149];
-          let yMax = 500;
+          let yMax = 1500;
           let dataShadow = [];
 
           for (let i = 0; i < data.length; i++) {
@@ -246,6 +241,13 @@
               },
               {
                 type: 'bar',
+                label: {
+                  normal: {
+                    show: true,
+                    position: 'top',
+                    color: '#fff'
+                  }
+                },
                 itemStyle: {
                   normal: {
                     color: new this.$echarts.graphic.LinearGradient(
@@ -272,19 +274,18 @@
               }
             ]
           })
-          // let zoomSize = 6;
-          // myChart.on('click', function (params) {
-          //   myChart.dispatchAction({
-          //     type: 'dataZoom',
-          //     startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
-          //     endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
-          //   });
-          // });
+          let zoomSize = 6;
+          myChart.on('click', function (params) {
+            myChart.dispatchAction({
+              type: 'dataZoom',
+              startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
+              endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
+            });
+          });
         })
       },
       customerDistribution() {
         this.$refs.myChart2.forEach((item) => {
-          console.log(item.id);
           // 基于准备好的dom，初始化echarts实例
           let myChart2 = this.$echarts.init(document.getElementById(item.id))
           let data2 = [{value: 80, name: '80%'},{value:20, name: '20%'}]
@@ -366,6 +367,8 @@
         })
       },
       orderTrend() {
+        let arr = []
+        arr = this.$refs.myChart3.length > 0 ? this.$refs.myChart3 : arr.push(this.$refs.myChart3)
         this.$refs.myChart3.forEach((item) => {
           let myChart3 = this.$echarts.init(document.getElementById(item.id))
           // 绘制图表
@@ -418,7 +421,7 @@
               }
             },
             series: [{
-              data: [820, 932, 901, 934, 1290, 1330, 1320],
+              data: [820, 932, 901, 934, 1290, 1330, 5000],
               type: 'line',
               smooth: true,
               itemStyle: { normal: { label: { show: true } } }
@@ -573,25 +576,34 @@
         })
 
       },
-      addKanban(i) {
-        this.index = this.index + 1
-        if(i == 1) {
-          this.data.push({text: "订单", isShow: true,id: this.index})
-          this.$nextTick(() => {
-            this.drawLine()
-          })
-        } else if(i == 2) {
-          this.data.push({text: "客户分布", isShow: true,id: this.index})
-          this.$nextTick(() => {
-            this.customerDistribution()
-          })
-        } else if(i == 3) {
-          this.data.push({text: "订单趋势", isShow: true,id: this.index})
-          this.$nextTick(() => {
-            this.orderTrend()
-          })
+      addKanban(type, i, item) {
+        if(this.isDisable == true) {
+          this.isDisable = false
+          let a = document.querySelectorAll('.addKanban_list')[i]
+          let e = this.$refs.box_left
+          let c = this.offsetDis(e)
+          let b = this.offsetDis(a)
+          let left = b.left - c.left
+          a.style = 'transform: translate(' + -left + 'px,' + c.top + 'px) scale(0.5);opacity: 0;'
+          setTimeout(() => {
+            this.isDisable = true
+            this.data.unshift(item)
+            this.order.splice(i, 1)
+            if(type == 1) {
+              this.$nextTick(() => {
+                this.drawLine()
+              })
+            } else if(type == 2) {
+              this.$nextTick(() => {
+                this.customerDistribution()
+              })
+            } else if(type == 3) {
+              this.$nextTick(() => {
+                this.orderTrend()
+              })
+            }
+          }, 1000)
         }
-        console.log(this.data);
       },
       nextPage() {
         this.$router.push({ path: '/projectComparison' })
@@ -621,11 +633,13 @@
     }
     .addKanban{
       width: 100%;
-      overflow: auto;
+      overflow: scroll hidden;
+      height: 280px;
       background: #F2F2F2;
       margin-left: 10px;
       border-radius: 5px;
       padding: 10px;
+      white-space:nowrap;
       .addKanban_title{
         font-size: 20px;
         color: #717777;
@@ -635,8 +649,12 @@
       .addKanban_list{
         width: 300px;
         height: 200px;
-        float: left;
+        display: inline-block;
         margin-right: 10px;
+        -webkit-transition:  all 1s cubic-bezier(.2,-0.59,.47,.97);
+        -o-transition:  all 1s cubic-bezier(.2,-0.59,.47,.97);
+        transition:  all 1s cubic-bezier(.2,-0.59,.47,.97);
+        opacity: 1;
         img{
           width: 100%;
           height: 80%;
@@ -670,8 +688,6 @@
           font-size: 190px;
           color: #273F54;
           font-weight: bold;
-          padding: 0;
-          margin: 0;
         }
         .left_item{
           width: 47%;
@@ -681,6 +697,10 @@
           padding: 20px;
           border-radius: 5px;
           position: relative;
+          -webkit-transition:  all 1s cubic-bezier(.2,-0.59,.47,.97);
+          -o-transition:  all 1s cubic-bezier(.2,-0.59,.47,.97);
+          transition:  all 1s cubic-bezier(.2,-0.59,.47,.97);
+          opacity: 1;
           .title{
             color: #1A7078;
             font-size: 16px;
@@ -688,6 +708,11 @@
           .left_order, .left_customer{
             width: 100%;
             height: 100%;
+            .left_order_myChart{
+              width: 100%;
+              height: 100%;
+              /*transform: translate(5%, 10%);*/
+            }
           }
           .customer_right{
             width: 50%;
@@ -717,11 +742,12 @@
             }
           }
           .popover{
-            width: 25px;
-            height: 30px;
+            width: 35px;
+            height: 40px;
             position: absolute;
             top: 5px;
             right: 5px;
+            padding: 5px;
             div{
               width: 100%;
               height: 4px;
@@ -736,7 +762,9 @@
             position: absolute;
             top: 35px;
             right: 0;
-            div{
+            z-index: 999;
+            span{
+              display: block;
               width: 100%;
               height: 20px;
               text-align: center;
@@ -753,6 +781,7 @@
         background: #404A59;
         padding: 5px;
         border-radius: 5px;
+        margin-bottom: 10px;
       }
     }
     .nextPageBtn{
@@ -762,6 +791,13 @@
       button{
         float: right;
       }
+    }
+    .popover_box{
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 50px;
+      height: 50px;
     }
   }
 </style>

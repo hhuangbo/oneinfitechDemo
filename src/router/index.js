@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 const search = resolve => require.ensure([],() => resolve(require('../view/search/index')),'search')
-const oneMap = resolve => require.ensure([],() => resolve(require('../view/oneMap/index')),'oneMap')
+const oneMap = resolve => require.ensure([],() => resolve(require('../view/oneMap/map')),'oneMap')
 const DataKanbanList = resolve => require.ensure([],() => resolve(require('../view/dataKanban/list')),'dataKanbanList')
 const Dashboard = resolve => require.ensure([],() => resolve(require('../view/dataKanban/dashboard')),'dashboard')
 const ProjectComparison = resolve => require.ensure([],() => resolve(require('../view/dataKanban/projectComparison')),'projectComparison')

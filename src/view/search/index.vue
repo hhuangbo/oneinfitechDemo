@@ -1,6 +1,6 @@
 <template>
     <div class="search">
-        <div class="serContent">            
+        <div class="serContent zoomIn animated">            
             <h3 class="">ONEINFITECH</h3>
             <div class="searchCont">
                 <!-- <el-select v-model="selectValue" placeholder="请选择">
@@ -14,20 +14,21 @@
                 <input class="searchInp" type="text"  placeholder="项目检索  麦德龙" v-model.trim="searchVal" @keyup.enter="searchEvent"/>
                 <button class="btnsearch" @click="searchEvent">搜索</button>
             </div>
-            <ul class="hotSearch">
-                <label>热门搜索：</label>
-                <li v-for="item in hotData" @click="handlehotSearch(item)">{{item}}</li>
-            </ul>
+            
+            <hotSearch />
         </div>
     </div>
 </template>
 
 <script>
+import hotSearch from './hotSearch'
 export default {
+    components:{
+        hotSearch
+    },
     data(){
         return{
             searchVal:'',
-            hotData:['麦德龙','保时捷','索尼','赛默飞'],
             options:[{
                 value: '项目检索'
             },{
@@ -50,10 +51,6 @@ export default {
                 });
                 return;
             }
-            this.$router.push({path:'oneMap',query:{selectType:this.selectValue,searchVal:this.searchVal}});
-        },
-        handlehotSearch(item){
-            this.searchVal=item
             this.$router.push({path:'oneMap',query:{selectType:this.selectValue,searchVal:this.searchVal}});
         }
     }
@@ -106,17 +103,6 @@ export default {
     margin-left: 10px;
     border-radius: 5px;
     cursor: pointer;
-}
-.hotSearch{
-    font-size: 12px;
-    color: #fff;
-    display: flex;
-    padding: 8px 0;
-    li{
-        padding: 0 5px;
-        cursor: pointer;
-    }
-
 }
 
 </style>

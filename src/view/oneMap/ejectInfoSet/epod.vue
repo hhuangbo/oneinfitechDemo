@@ -1,5 +1,5 @@
 <template>
-    <div class="detailList" v-show="deListShow">
+    <div class="ejectInfoSet detailList" v-show="deListShow">
         <div class="toolRight">
             <i class="iconfont icon-close" @click="handleCurrClose(1)"></i>  
         </div>
@@ -31,19 +31,6 @@ export default {
 
 <style lang="scss" scoped>
 .detailList{
-    width: 50%;
-    position: absolute;
-    right: 0;
-    top: 50px;
-    padding: 20px;
-    background-color: $C0d0e0f;
-    color: #fff;
-    text-align: center;
-    .toolRight{
-        position: absolute;
-        top: 7px;
-        right: 5px;
-    }
     label{
         font-size: 18px;
         display: inline-block;

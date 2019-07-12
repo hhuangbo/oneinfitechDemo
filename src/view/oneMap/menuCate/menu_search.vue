@@ -26,7 +26,6 @@ export default {
         searchOrder(){
             var get_searchResult=Util.fuzzyQuery(this.searchMenuData,this.searchV)
             this.$emit('searchResult',get_searchResult)
-            // console.log(get_searchResult)
         }
     }
 }

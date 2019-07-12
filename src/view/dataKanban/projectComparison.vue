@@ -28,7 +28,6 @@
         </el-cascader>
       </el-form-item>
     </el-form>
-
     <div class="dashboard_box">
       <div class="dashboard">
         <div class="list_title">
@@ -42,9 +41,9 @@
         </div>
       </div>
       <div class="panel_box">
-        <div class="panel_list_box" v-for="(item, i) in data" v-dragging="{ item: item, list: data, group: 'item' }" :key="item.id" v-if="item.isShow == true">
+        <div class="panel_list_box" v-for="(list, i) in data" v-dragging="{ item: list, list: data, group: 'list' }" :key="list.id" v-if="list.isShow == true">
           <div class="panel_list">
-            <p class="title">{{item.text}}</p>
+            <p class="title">{{list.text}}</p>
             <div class="list_body">
               <p class="body_title">客户分布</p>
               <div @mouseenter="enter(i)" @mouseleave="leave()">
@@ -377,7 +376,7 @@
     overflow: auto;
     background: #FAFAFA;
     .dashboard_box{
-      overflow: auto;
+      overflow: scroll hidden;
       padding: 5px;
       position: relative;
       margin-bottom: 100px;

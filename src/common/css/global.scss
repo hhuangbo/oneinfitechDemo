@@ -92,6 +92,22 @@ h2,h3,h4{font-weight: 100;}
     width: auto;
 
 }
+.ejectInfoSet{
+    width: 50%;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    padding: 20px;
+    background-color: $C0d0e0f;
+    color: #fff;
+    text-align: center;
+    .toolRight{
+        position: absolute;
+        top: 7px;
+        right: 5px;
+    }
+}
+
 .amap-info-close{right: 10px !important;}
 //自定义复选 单选框样式
 .checkbox__label{
